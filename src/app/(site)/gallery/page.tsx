@@ -3,12 +3,18 @@ import { ArtistGalleryPage } from '@/components/press-kit';
 import { martinaArtist } from '@/data/artists/martina';
 import { buildArtistMetadata } from '@/lib/seo';
 import { resolveArtist } from '@/lib/airtable';
+import { getRequestedArtistSlug, type ArtistSearchParams } from '@/lib/requested-artist';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return buildArtistMetadata(martinaArtist, '/gallery');
+type PageProps = {
+  searchParams?: ArtistSearchParams;
+};
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const artist = await resolveArtist(await getRequestedArtistSlug(searchParams, martinaArtist.slug));
+  return buildArtistMetadata(artist, '/gallery');
 }
 
-export default async function GalleryPage() {
-  const artist = await resolveArtist(martinaArtist.slug);
+export default async function GalleryPage({ searchParams }: PageProps) {
+  const artist = await resolveArtist(await getRequestedArtistSlug(searchParams, martinaArtist.slug));
   return <ArtistGalleryPage artist={artist} />;
 }

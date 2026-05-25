@@ -23,6 +23,14 @@ function getSocialUrl(artist: Artist, platform: ArtistSocialLink['platform']) {
   return artist.socials.find((social) => social.platform === platform)?.url ?? '#';
 }
 
+function getArtistPath(artist: Artist, path: string) {
+  if (artist.slug === 'martina') return path;
+  const [basePath, hash = ''] = path.split('#');
+  const normalizedBase = basePath || '/';
+  const separator = normalizedBase.includes('?') ? '&' : '?';
+  return `${normalizedBase}${separator}client=${artist.slug}${hash ? `#${hash}` : ''}`;
+}
+
 function buildNavItems() {
   return [
     { label: 'Listen', href: '/listen' },
@@ -58,6 +66,137 @@ function SectionIntro({
       </h2>
       <p className="mt-5 text-base leading-7 text-white/75 sm:text-lg">{body}</p>
     </motion.div>
+  );
+}
+
+function BioQuote({
+  artistName,
+  quote,
+  compact = false,
+}: {
+  artistName: string;
+  quote: string;
+  compact?: boolean;
+}) {
+  return (
+    <figure
+      className={
+        compact
+          ? 'relative mt-5 border-l-2 border-violet-300/70 pl-5'
+          : 'relative mt-8 max-w-2xl overflow-hidden rounded-lg border border-violet-300/20 bg-[linear-gradient(135deg,rgba(124,58,237,0.16),rgba(217,70,239,0.09),rgba(255,255,255,0.045))] px-6 py-6 shadow-2xl shadow-violet-950/20 backdrop-blur-sm sm:px-8 sm:py-7'
+      }
+    >
+      {!compact && (
+        <>
+          <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-violet-300 via-fuchsia-300 to-violet-500" />
+          <div className="absolute right-5 top-3 text-7xl font-black leading-none text-violet-100/[0.08]">
+            &ldquo;
+          </div>
+        </>
+      )}
+      <blockquote
+        className={
+          compact
+            ? 'text-base font-semibold leading-7 text-white/88 italic'
+            : 'relative text-xl font-black leading-snug tracking-[-0.03em] text-white sm:text-2xl'
+        }
+      >
+        &ldquo;{quote}&rdquo;
+      </blockquote>
+      <figcaption
+        className={
+          compact
+            ? 'mt-3 text-[0.68rem] uppercase tracking-[0.3em] text-violet-100/48'
+            : 'mt-5 text-[0.68rem] font-bold uppercase tracking-[0.32em] text-violet-100/55'
+        }
+      >
+        {artistName} · Artist statement
+      </figcaption>
+    </figure>
+  );
+}
+
+function AnimatedKpiValue({ value }: { value: string }) {
+  const [display, setDisplay] = useState(value);
+
+  useEffect(() => {
+    const match = value.match(/^([+]?)(\d+(?:[.,]\d+)?)(\s*[kKmM]?)$/);
+
+    if (!match) {
+      setDisplay(value);
+      return;
+    }
+
+    const prefix = match[1] ?? '';
+    const target = Number.parseFloat(match[2].replace(',', '.'));
+    const suffix = match[3].toUpperCase();
+    const duration = 1350;
+    const start = performance.now();
+    let frame = 0;
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(target * eased);
+      setDisplay(`${prefix}${current}${suffix}`);
+
+      if (progress < 1) {
+        frame = window.requestAnimationFrame(tick);
+      }
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [value]);
+
+  return <>{display}</>;
+}
+
+function KpiSection({ artist }: { artist: Artist }) {
+  if (artist.highlights.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="relative z-10 bg-transparent px-5 py-5 sm:px-8 sm:py-3 lg:px-12">
+      <motion.div
+        className="mx-auto grid max-w-7xl justify-items-center gap-5 bg-[linear-gradient(90deg,rgba(124,58,237,0.10),rgba(217,70,239,0.07),rgba(255,255,255,0.02))] py-5 text-center sm:grid-cols-3 sm:justify-items-start sm:gap-8 sm:py-4 sm:text-left"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.35 }}
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.09,
+            },
+          },
+        }}
+      >
+        {artist.highlights.map((highlight, index) => (
+          <motion.article
+            key={highlight.label}
+            className="relative flex w-full max-w-[18rem] flex-col items-center px-2 sm:max-w-none sm:items-start sm:px-0"
+            variants={{
+              hidden: { opacity: 0, y: 24, scale: 0.96 },
+              visible: { opacity: 1, y: 0, scale: 1 },
+            }}
+            transition={{ duration: 0.75, delay: index * 0.03, ease: smoothEase }}
+            whileHover={{ y: -3 }}
+          >
+            <p className="text-[0.62rem] font-bold uppercase tracking-[0.28em] text-violet-100/58">
+              {highlight.label}
+            </p>
+            <p className="mt-1.5 bg-gradient-to-r from-white via-violet-100 to-fuchsia-200 bg-clip-text text-3xl font-black tracking-[-0.04em] text-transparent sm:text-4xl">
+              <AnimatedKpiValue value={highlight.value} />
+            </p>
+            <p className="mt-1 max-w-[14rem] text-xs leading-5 text-violet-50/58 sm:max-w-xs sm:text-sm">
+              {highlight.detail}
+            </p>
+          </motion.article>
+        ))}
+      </motion.div>
+    </section>
   );
 }
 
@@ -128,39 +267,114 @@ function HeroSocialBand({ artist }: { artist: Artist }) {
 }
 
 function HeroPlatformIcon({ platform }: { platform: string }) {
-  const cls = 'h-[22px] w-[22px] text-white/60 transition-colors group-hover:text-white/90';
+  const cls = 'h-[24px] w-[24px] transition-transform duration-200 group-hover:scale-110';
   if (platform === 'Instagram') return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cls}>
-      <rect x="4" y="4" width="16" height="16" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" />
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <defs>
+        <linearGradient id="ig-hero" x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FEDA75" />
+          <stop offset="0.28" stopColor="#FA7E1E" />
+          <stop offset="0.52" stopColor="#D62976" />
+          <stop offset="0.74" stopColor="#962FBF" />
+          <stop offset="1" stopColor="#4F5BD5" />
+        </linearGradient>
+      </defs>
+      <rect x="3.8" y="3.8" width="16.4" height="16.4" rx="5.2" stroke="url(#ig-hero)" strokeWidth="1.9" />
+      <circle cx="12" cy="12" r="4" stroke="url(#ig-hero)" strokeWidth="1.9" />
+      <circle cx="17.2" cy="6.8" r="1.15" fill="url(#ig-hero)" />
+    </svg>
+  );
+  if (platform === 'Threads') return (
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <circle cx="12" cy="12" r="10" fill="#fff" />
+      <path
+        d="M16.45 11.4c-.12-3.15-1.86-5.08-4.58-5.08-2.68 0-4.68 1.9-4.68 5.58 0 3.88 2.18 5.78 5 5.78 2.1 0 3.7-1 4.4-2.85l-1.72-.58c-.48 1.18-1.34 1.78-2.62 1.78-1.92 0-3.06-1.42-3.06-4.1 0-2.62 1.04-3.98 2.7-3.98 1.58 0 2.42 1.02 2.62 3.02-.6-.14-1.24-.2-1.9-.18-2.26.08-3.55 1.14-3.55 2.78 0 1.46 1.1 2.5 2.76 2.5 1.62 0 2.84-.9 3.38-2.42.78.48 1.22 1.16 1.22 2.02 0 1.8-1.55 3.38-4.2 3.38-3.2 0-5.25-2.25-5.25-6.1 0-3.92 2.02-6.2 5.02-6.2 2.74 0 4.38 1.66 4.72 4.28l1.72-.42Zm-2.15 1.4c-.28 1.08-1.05 1.72-2.12 1.72-.74 0-1.22-.38-1.22-.98 0-.76.66-1.22 1.78-1.26.55-.02 1.08.06 1.56.22v.3Z"
+        fill="#000"
+      />
     </svg>
   );
   if (platform === 'TikTok') return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={cls}>
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.05a8.16 8.16 0 0 0 4.77 1.52V7.12a4.85 4.85 0 0 1-1-.43z"/>
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <path d="M15.9 4.1a5.1 5.1 0 0 0 3.7 3.3v3.2a8.1 8.1 0 0 1-3.8-1.1v5.8a6.1 6.1 0 1 1-5.4-6.1v3.4a2.8 2.8 0 1 0 2 2.7V4.1h3.5Z" fill="#25F4EE" opacity="0.95" />
+      <path d="M16.9 3.2a5.1 5.1 0 0 0 3.7 3.3v3.2a8.1 8.1 0 0 1-3.8-1.1v5.8a6.1 6.1 0 1 1-5.4-6.1v3.4a2.8 2.8 0 1 0 2 2.7V3.2h3.5Z" fill="#FE2C55" opacity="0.9" />
+      <path d="M16.35 3.65a5.1 5.1 0 0 0 3.7 3.3v3.2a8.1 8.1 0 0 1-3.8-1.1v5.8a6.1 6.1 0 1 1-5.4-6.1v3.4a2.8 2.8 0 1 0 2 2.7V3.65h3.5Z" fill="#fff" />
     </svg>
   );
   if (platform === 'YouTube') return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={cls}>
-      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
-      <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#0a0a0a"/>
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <path d="M22.3 6.5a2.8 2.8 0 0 0-2-2C18.6 4 12 4 12 4s-6.6 0-8.3.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 1.2 12a29 29 0 0 0 .5 5.5 2.8 2.8 0 0 0 2 2C5.4 20 12 20 12 20s6.6 0 8.3-.5a2.8 2.8 0 0 0 2-2 29 29 0 0 0 .5-5.5 29 29 0 0 0-.5-5.5Z" fill="#FF0000" />
+      <path d="M10 15.4V8.6l6 3.4-6 3.4Z" fill="#fff" />
     </svg>
   );
   if (platform === 'Spotify') return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={cls}>
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M8 14.5c2.5-1 5.5-.8 7.5.5" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-      <path d="M7.5 11.5c3-1.2 6.5-1 9 .8" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-      <path d="M7 8.5c3.5-1.4 7.5-1.2 10.5 1" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <circle cx="12" cy="12" r="10" fill="#1DB954" />
+      <path d="M7.4 9c3.2-1 7.2-.8 9.8 1" stroke="#06130B" strokeWidth="1.75" strokeLinecap="round" />
+      <path d="M8 12c2.6-.8 5.8-.6 8 .8" stroke="#06130B" strokeWidth="1.55" strokeLinecap="round" />
+      <path d="M8.5 14.8c2.1-.6 4.4-.45 6.3.6" stroke="#06130B" strokeWidth="1.35" strokeLinecap="round" />
     </svg>
   );
   if (platform === 'Apple Music') return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={cls}>
-      <path d="M18.71 5.65C17.91 4.75 16.71 4.25 15.5 4.25h-7c-1.21 0-2.41.5-3.21 1.4C4.49 6.55 4 7.75 4 9v6c0 1.25.49 2.45 1.29 3.35.8.9 2 1.4 3.21 1.4h7c1.21 0 2.41-.5 3.21-1.4.8-.9 1.29-2.1 1.29-3.35V9c0-1.25-.49-2.45-1.29-3.35zM15 12.5v2c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-1.29l-3 .75v2.04c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-4.5c0-.24.17-.44.41-.49l3.5-.88c.16-.04.33 0 .45.11.12.11.14.28.14.44v.82z"/>
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <defs>
+        <linearGradient id="apple-music-hero" x1="4" y1="20" x2="20" y2="4" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FA233B" />
+          <stop offset="1" stopColor="#FB5C74" />
+        </linearGradient>
+      </defs>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="url(#apple-music-hero)" />
+      <path d="M15.6 7.4v7.7a2.05 2.05 0 1 1-1.1-1.82V9.7l-5.1 1.05v5.45a2.05 2.05 0 1 1-1.1-1.82V9.55c0-.46.32-.86.77-.95l5.5-1.14c.53-.11 1.03.3 1.03.84Z" fill="#fff" />
     </svg>
   );
-  return null;
+  if (platform === 'Deezer') return (
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <rect x="3" y="14" width="3.2" height="3.2" fill="#FF0092" />
+      <rect x="7.3" y="10.8" width="3.2" height="3.2" fill="#FF6B00" />
+      <rect x="7.3" y="14" width="3.2" height="3.2" fill="#FF6B00" />
+      <rect x="11.6" y="7.6" width="3.2" height="3.2" fill="#F7E000" />
+      <rect x="11.6" y="10.8" width="3.2" height="3.2" fill="#00C7F2" />
+      <rect x="11.6" y="14" width="3.2" height="3.2" fill="#00C7F2" />
+      <rect x="15.9" y="4.4" width="3.2" height="3.2" fill="#A238FF" />
+      <rect x="15.9" y="7.6" width="3.2" height="3.2" fill="#A238FF" />
+      <rect x="15.9" y="10.8" width="3.2" height="3.2" fill="#00D95F" />
+      <rect x="15.9" y="14" width="3.2" height="3.2" fill="#00D95F" />
+    </svg>
+  );
+  if (platform === 'Amazon Music') return (
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <path d="M5.2 6.2h13.6v11.6H5.2z" fill="#111827" />
+      <path d="M8 10.2c.85-.8 2.1-1.25 3.55-1.25 2.2 0 3.55 1.15 3.55 3.15v4.1h-2.25v-.84c-.56.65-1.35 1-2.38 1-1.55 0-2.65-.9-2.65-2.25 0-1.5 1.18-2.3 3.25-2.3h1.7v-.12c0-.8-.52-1.25-1.55-1.25-.83 0-1.6.3-2.22.82L8 10.2Z" fill="#00A8E1" />
+      <path d="M10.25 14c0 .48.42.8 1.05.8.72 0 1.28-.34 1.48-.88v-.58h-1.36c-.78 0-1.17.2-1.17.66Z" fill="#111827" />
+      <path d="M7.1 18.4c2.8 1.45 6.4 1.52 9.45.12" stroke="#00A8E1" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M16.9 17.25l1.65.35-.75 1.5" stroke="#00A8E1" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+  if (platform === 'iTunes') return (
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <defs>
+        <linearGradient id="itunes-hero" x1="4" y1="20" x2="20" y2="4" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#7B61FF" />
+          <stop offset="0.5" stopColor="#E044FF" />
+          <stop offset="1" stopColor="#FF2D55" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9.5" fill="url(#itunes-hero)" />
+      <path d="M15.2 7.7v6.5a1.8 1.8 0 1 1-1-.6V9.8l-4.1.8v4.8a1.8 1.8 0 1 1-1-.6V9.6c0-.36.25-.68.61-.75l4.7-.92c.42-.08.79.24.79.67Z" fill="#fff" />
+    </svg>
+  );
+  if (platform === 'iHeartRadio') return (
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <path d="M12 20s-7-4.6-8.8-9.1C1.9 7.6 3.8 4.6 7 4.6c1.8 0 3.2 1 4 2.3.8-1.3 2.2-2.3 4-2.3 3.2 0 5.1 3 3.8 6.3C17 15.4 12 20 12 20Z" fill="#C6002B" />
+      <path d="M8.6 10.2a3.8 3.8 0 0 1 6.8 0M7.2 8.7a5.8 5.8 0 0 1 9.6 0" stroke="#fff" strokeWidth="1.15" strokeLinecap="round" />
+      <circle cx="12" cy="11.7" r="1.15" fill="#fff" />
+    </svg>
+  );
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="#8FA8FF" strokeWidth="1.8" className={cls}>
+      <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 12a7 7 0 0 1 13.2-3.2M19 12A7 7 0 0 1 5.8 15.2" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 function ContactLogo({
@@ -227,7 +441,11 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
   const navItems = useMemo(() => buildNavItems(), []);
 
   const resolveHref = (href: string) =>
-    href.startsWith('#') && prefixAnchors ? `/${href}` : href;
+    getArtistPath(artist, href.startsWith('#') && prefixAnchors ? `/${href}` : href);
+
+  useEffect(() => {
+    document.documentElement.dataset.artistSlug = artist.slug;
+  }, [artist.slug]);
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -240,7 +458,7 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-8 sm:pt-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-0 py-0 sm:px-6 lg:site-header-shell lg:rounded-full lg:border lg:border-white/15 lg:bg-black/35 lg:px-4 lg:py-3 lg:backdrop-blur-xl">
         <Link
-          href="/"
+          href={getArtistPath(artist, '/')}
           className="hidden text-sm font-black tracking-[0.35em] text-white uppercase lg:inline-flex"
         >
           {artist.stageName}
@@ -324,6 +542,10 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
   const isBW = themeMode === 'bw';
   const streetImage = artist.gallery[1]?.src ?? artist.heroImage.src;
   const futuristicImage = artist.gallery[2]?.src ?? artist.heroImage.src;
+  const heroImageClass =
+    artist.slug === 'sherin'
+      ? 'object-cover object-[center_22%] opacity-90'
+      : 'object-cover object-center opacity-90';
 
   useEffect(() => {
     if (initialTheme) return; // theme forced by route, ignore localStorage
@@ -340,8 +562,9 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
 
   useEffect(() => {
     document.documentElement.dataset.siteTheme = themeMode;
+    document.documentElement.dataset.artistSlug = artist.slug;
     window.localStorage.setItem('site-theme', themeMode);
-  }, [themeMode]);
+  }, [artist.slug, themeMode]);
 
 
   const renderLuxuryMinimal = () => (
@@ -355,7 +578,7 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
         fill
         priority
         quality={90}
-        className="object-cover object-center opacity-90"
+        className={heroImageClass}
         sizes="100vw"
       />
       <div className="hero-overlay-primary absolute inset-0 bg-[linear-gradient(180deg,rgba(22,14,10,0.14)_0%,rgba(20,14,12,0.24)_32%,rgba(10,8,8,0.76)_100%)]" />
@@ -415,9 +638,9 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
                 >
                   {artist.tagline}
                 </motion.p>
-                <div className="hero-info-panel theme-panel space-y-2 rounded-[1.25rem] bg-black/24 p-4 backdrop-blur-sm md:text-right">
+                <div className="hero-info-panel theme-panel max-w-full space-y-2 rounded-[1.25rem] bg-black/24 p-4 backdrop-blur-sm md:text-right">
                   <motion.p
-                    className="text-sm font-medium tracking-[0.35em] text-white/70 uppercase md:text-base"
+                    className="text-sm font-medium tracking-[0.28em] text-white/70 uppercase sm:tracking-[0.35em] md:text-base"
                     initial={{ y: 14, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.7, delay: 1.0, ease: smoothEase }}
@@ -425,7 +648,7 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
                     {artist.city} · {artist.country}
                   </motion.p>
                   <motion.p
-                    className="text-sm tracking-[0.3em] text-white/55 uppercase"
+                    className="max-w-[18rem] text-xs leading-6 tracking-[0.18em] text-white/55 uppercase sm:max-w-none sm:text-sm sm:tracking-[0.3em]"
                     initial={{ y: 14, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.7, delay: 1.1, ease: smoothEase }}
@@ -694,6 +917,7 @@ function AboutSection({ artist }: { artist: Artist }) {
               À propos de {artist.stageName}
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/75 sm:text-lg">{artist.longBio}</p>
+            {artist.bioQuote && <BioQuote artistName={artist.stageName} quote={artist.bioQuote} />}
           </div>
 
           {/* KPIs hidden — to be re-enabled once data is confirmed */}
@@ -740,6 +964,66 @@ function AboutSection({ artist }: { artist: Artist }) {
           </div>
         </motion.div>
       </div>
+    </section>
+  );
+}
+
+function PressReleaseSection({ artist }: { artist: Artist }) {
+  if (!artist.pressRelease) {
+    return null;
+  }
+
+  const release = artist.pressRelease;
+
+  return (
+    <section className="press-section section-release relative overflow-hidden border-t border-white/12 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,24,72,0.92),rgba(34,10,58,0.82)_48%,rgba(8,8,18,0.96))]" />
+      <div className="ambient-shift absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(74,144,255,0.28),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(180,82,255,0.24),transparent_30%)]" />
+      <div className="grain-overlay" />
+      <div className="film-vignette" />
+
+      <motion.article
+        className="theme-panel relative z-10 mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.05] lg:grid-cols-[0.86fr_1.14fr]"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.18 }}
+        transition={{ duration: 0.75, ease: smoothEase }}
+      >
+        <div className="relative min-h-[26rem] border-b border-white/10 lg:border-b-0 lg:border-r">
+          <Image
+            src={artist.gallery[2]?.src ?? artist.heroImage.src}
+            alt={artist.gallery[2]?.alt ?? artist.heroImage.alt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 42vw"
+          />
+          <div className="theme-image-overlay absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+            <p className="text-[0.72rem] uppercase tracking-[0.42em] text-white/60">
+              {release.eyebrow}
+            </p>
+            <p className="mt-3 text-sm uppercase tracking-[0.24em] text-white/72">
+              {release.locationDate}
+            </p>
+          </div>
+        </div>
+
+        <div className="theme-panel-subtle bg-black/24 p-6 sm:p-8 lg:p-10">
+          <h2 className="text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
+            {release.title}
+          </h2>
+          <p className="mt-6 text-base leading-7 text-white/82 sm:text-lg">{release.intro}</p>
+          <div className="mt-6 space-y-4 text-sm leading-7 text-white/72 sm:text-base">
+            {release.body.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+          <blockquote className="mt-7 border-l border-white/25 pl-5 text-lg leading-8 text-white sm:text-xl">
+            “{release.quote}”
+          </blockquote>
+          <p className="mt-6 text-sm leading-7 text-white/68">{release.footer}</p>
+        </div>
+      </motion.article>
     </section>
   );
 }
@@ -1294,7 +1578,7 @@ function ListenHighlightSection({ artist }: ArtistPageProps) {
                 </a>
               ))}
               <Link
-                href="/listen"
+                href={getArtistPath(artist, '/listen')}
                 className="theme-chip inline-flex rounded-full border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-white"
               >
                 Tout écouter
@@ -1433,7 +1717,7 @@ function GallerySection({ artist }: ArtistPageProps) {
             transition={{ duration: 0.6, ease: smoothEase }}
           >
             <Link
-              href="/gallery"
+              href={getArtistPath(artist, '/gallery')}
               className="theme-chip inline-flex items-center rounded-full border border-white/15 bg-white/8 px-6 py-3 text-sm font-bold uppercase tracking-[0.26em] text-white transition-colors hover:bg-white/12"
             >
               Voir la galerie
@@ -1441,15 +1725,15 @@ function GallerySection({ artist }: ArtistPageProps) {
           </motion.div>
         </div>
 
-        <div className="mt-10 flex gap-4 overflow-x-auto pb-3 sm:mt-12 sm:gap-5 sm:pb-4 xl:grid xl:grid-cols-3 xl:overflow-x-visible xl:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {[artist.gallery[3], artist.gallery[4], artist.gallery[6]].map((image, index) => (
+        <div className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 sm:mt-12 sm:gap-5 sm:pb-4 lg:grid lg:grid-cols-3 lg:overflow-x-visible lg:pb-0 xl:grid-cols-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {artist.gallery.map((image, index) => (
             <motion.div
               key={image.src}
               initial={{ opacity: 0, y: 32 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: index * 0.05, ease: smoothEase }}
-              className="theme-panel group relative w-[78vw] flex-none overflow-hidden rounded-[1.75rem] border border-white/10 sm:w-[24rem] lg:w-[26rem] xl:w-auto"
+              className="theme-panel group relative w-[78vw] snap-center flex-none overflow-hidden rounded-[1.75rem] border border-white/10 sm:w-[24rem] lg:w-auto"
             >
               <div className="relative aspect-[4/5]">
                 <Image
@@ -1457,11 +1741,13 @@ function GallerySection({ artist }: ArtistPageProps) {
                   alt={image.alt}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 640px) 78vw, 26rem"
+                  sizes="(max-width: 640px) 78vw, (max-width: 1024px) 24rem, (max-width: 1280px) 33vw, 25vw"
                 />
                 <div className="theme-image-overlay absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
                 <div className="theme-overlay-panel absolute bottom-0 left-0 right-0 rounded-t-[1.25rem] bg-black/30 p-5 backdrop-blur-md">
-                  <p className="text-xs uppercase tracking-[0.28em] text-white/52">0{index + 1}</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-white/52">
+                    {String(index + 1).padStart(2, '0')}
+                  </p>
                   <p className="mt-2 text-lg font-medium text-white">{image.caption}</p>
                 </div>
               </div>
@@ -1474,6 +1760,14 @@ function GallerySection({ artist }: ArtistPageProps) {
 }
 
 function ContactSection({ artist }: { artist: Artist }) {
+  const contactInstagram =
+    artist.slug === 'sherin'
+      ? { handle: '@futur.mgmt', url: 'https://www.instagram.com/futur.mgmt/' }
+      : {
+          handle: artist.socials.find((social) => social.platform === 'Instagram')?.handle ?? '@artist',
+          url: getSocialUrl(artist, 'Instagram'),
+        };
+
   const contactItems = [
     {
       label: 'Booking',
@@ -1498,9 +1792,9 @@ function ContactSection({ artist }: { artist: Artist }) {
         }
       : null,
     {
-      label: 'Instagram',
-      value: artist.socials.find((social) => social.platform === 'Instagram')?.handle ?? '@artist',
-      href: getSocialUrl(artist, 'Instagram'),
+      label: artist.slug === 'sherin' ? 'Instagram management' : 'Instagram',
+      value: contactInstagram.handle,
+      href: contactInstagram.url,
       kind: 'instagram' as const,
     },
   ].filter(Boolean) as Array<{
@@ -1586,6 +1880,15 @@ function FooterPlatformIcon({ platform }: { platform: string }) {
       <circle cx="17.2" cy="6.8" r="1" fill="url(#ig-footer)" stroke="none" />
     </svg>
   );
+  if (platform === 'Threads') return (
+    <svg viewBox="0 0 24 24" fill="none" className={sz}>
+      <circle cx="12" cy="12" r="10" fill="#000000" />
+      <path
+        d="M16.45 11.4c-.12-3.15-1.86-5.08-4.58-5.08-2.68 0-4.68 1.9-4.68 5.58 0 3.88 2.18 5.78 5 5.78 2.1 0 3.7-1 4.4-2.85l-1.72-.58c-.48 1.18-1.34 1.78-2.62 1.78-1.92 0-3.06-1.42-3.06-4.1 0-2.62 1.04-3.98 2.7-3.98 1.58 0 2.42 1.02 2.62 3.02-.6-.14-1.24-.2-1.9-.18-2.26.08-3.55 1.14-3.55 2.78 0 1.46 1.1 2.5 2.76 2.5 1.62 0 2.84-.9 3.38-2.42.78.48 1.22 1.16 1.22 2.02 0 1.8-1.55 3.38-4.2 3.38-3.2 0-5.25-2.25-5.25-6.1 0-3.92 2.02-6.2 5.02-6.2 2.74 0 4.38 1.66 4.72 4.28l1.72-.42Zm-2.15 1.4c-.28 1.08-1.05 1.72-2.12 1.72-.74 0-1.22-.38-1.22-.98 0-.76.66-1.22 1.78-1.26.55-.02 1.08.06 1.56.22v.3Z"
+        fill="#ffffff"
+      />
+    </svg>
+  );
   if (platform === 'TikTok') return (
     <svg viewBox="0 0 24 24" fill="#000000" className={sz}>
       <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.05a8.16 8.16 0 0 0 4.77 1.52V7.12a4.85 4.85 0 0 1-1-.43z"/>
@@ -1610,24 +1913,108 @@ function FooterPlatformIcon({ platform }: { platform: string }) {
       <path d="M18.71 5.65C17.91 4.75 16.71 4.25 15.5 4.25h-7c-1.21 0-2.41.5-3.21 1.4C4.49 6.55 4 7.75 4 9v6c0 1.25.49 2.45 1.29 3.35.8.9 2 1.4 3.21 1.4h7c1.21 0 2.41-.5 3.21-1.4.8-.9 1.29-2.1 1.29-3.35V9c0-1.25-.49-2.45-1.29-3.35zM15 12.5v2c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-1.29l-3 .75v2.04c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-4.5c0-.24.17-.44.41-.49l3.5-.88c.16-.04.33 0 .45.11.12.11.14.28.14.44v.82z"/>
     </svg>
   );
-  return null;
+  if (platform === 'Deezer') return (
+    <svg viewBox="0 0 24 24" fill="none" className={sz}>
+      <rect x="3" y="14" width="3.2" height="3.2" fill="#FF0092" />
+      <rect x="7.3" y="10.8" width="3.2" height="3.2" fill="#FF6B00" />
+      <rect x="7.3" y="14" width="3.2" height="3.2" fill="#FF6B00" />
+      <rect x="11.6" y="7.6" width="3.2" height="3.2" fill="#F7E000" />
+      <rect x="11.6" y="10.8" width="3.2" height="3.2" fill="#00C7F2" />
+      <rect x="11.6" y="14" width="3.2" height="3.2" fill="#00C7F2" />
+      <rect x="15.9" y="4.4" width="3.2" height="3.2" fill="#A238FF" />
+      <rect x="15.9" y="7.6" width="3.2" height="3.2" fill="#A238FF" />
+      <rect x="15.9" y="10.8" width="3.2" height="3.2" fill="#00D95F" />
+      <rect x="15.9" y="14" width="3.2" height="3.2" fill="#00D95F" />
+    </svg>
+  );
+  if (platform === 'Amazon Music') return (
+    <svg viewBox="0 0 24 24" fill="none" className={sz}>
+      <path d="M5.2 6.2h13.6v11.6H5.2z" fill="#111827" />
+      <path d="M8 10.2c.85-.8 2.1-1.25 3.55-1.25 2.2 0 3.55 1.15 3.55 3.15v4.1h-2.25v-.84c-.56.65-1.35 1-2.38 1-1.55 0-2.65-.9-2.65-2.25 0-1.5 1.18-2.3 3.25-2.3h1.7v-.12c0-.8-.52-1.25-1.55-1.25-.83 0-1.6.3-2.22.82L8 10.2Z" fill="#00A8E1" />
+      <path d="M10.25 14c0 .48.42.8 1.05.8.72 0 1.28-.34 1.48-.88v-.58h-1.36c-.78 0-1.17.2-1.17.66Z" fill="#111827" />
+      <path d="M7.1 18.4c2.8 1.45 6.4 1.52 9.45.12" stroke="#00A8E1" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M16.9 17.25l1.65.35-.75 1.5" stroke="#00A8E1" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+  if (platform === 'iTunes') return (
+    <svg viewBox="0 0 24 24" fill="none" className={sz}>
+      <defs>
+        <linearGradient id="itunes-footer" x1="4" y1="20" x2="20" y2="4" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#7B61FF" />
+          <stop offset="0.5" stopColor="#E044FF" />
+          <stop offset="1" stopColor="#FF2D55" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9.5" fill="url(#itunes-footer)" />
+      <path d="M15.2 7.7v6.5a1.8 1.8 0 1 1-1-.6V9.8l-4.1.8v4.8a1.8 1.8 0 1 1-1-.6V9.6c0-.36.25-.68.61-.75l4.7-.92c.42-.08.79.24.79.67Z" fill="#fff" />
+    </svg>
+  );
+  if (platform === 'iHeartRadio') return (
+    <svg viewBox="0 0 24 24" fill="none" className={sz}>
+      <path d="M12 20s-7-4.6-8.8-9.1C1.9 7.6 3.8 4.6 7 4.6c1.8 0 3.2 1 4 2.3.8-1.3 2.2-2.3 4-2.3 3.2 0 5.1 3 3.8 6.3C17 15.4 12 20 12 20Z" fill="#C6002B" />
+      <path d="M8.6 10.2a3.8 3.8 0 0 1 6.8 0M7.2 8.7a5.8 5.8 0 0 1 9.6 0" stroke="#fff" strokeWidth="1.15" strokeLinecap="round" />
+      <circle cx="12" cy="11.7" r="1.15" fill="#fff" />
+    </svg>
+  );
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="#536dff" strokeWidth="1.8" className={sz}>
+      <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 12a7 7 0 0 1 13.2-3.2M19 12A7 7 0 0 1 5.8 15.2" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 function SiteFooter({ artist }: { artist: Artist }) {
   const year = new Date().getFullYear();
+  const sitemapItems = [
+    { label: 'Accueil', href: '/' },
+    { label: 'Listen', href: '/listen' },
+    { label: 'À propos', href: '/#about' },
+    { label: 'Vidéos', href: '/#video' },
+    { label: 'Galerie', href: '/gallery' },
+    { label: 'Contact', href: '/#contact' },
+  ];
+  const platformItems = [
+    ...artist.socials,
+    ...artist.streamingLinks.map((s) => ({ platform: s.platform, url: s.url })),
+  ];
+
   return (
-    <footer className="relative border-t border-black/8 bg-white px-5 py-10 sm:px-8 lg:px-12">
-      <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+    <footer className="relative border-t border-black/8 bg-white px-5 py-10 text-black sm:px-8 lg:px-12">
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_1.2fr_1fr] lg:items-start">
+        <div className="max-w-xs">
           <p className="text-sm font-black tracking-[0.32em] text-black uppercase">
             {artist.stageName}
           </p>
           <p className="mt-1.5 text-[0.68rem] tracking-[0.18em] text-black/32">
             © {year} · Tous droits réservés
           </p>
+          <p className="mt-4 text-sm leading-6 text-black/52">{artist.tagline}</p>
         </div>
-        <nav className="flex items-center gap-5">
-          {[...artist.socials, ...artist.streamingLinks.map((s) => ({ platform: s.platform, url: s.url }))].map((item) => (
+
+        <nav aria-label="Plan du site">
+          <p className="text-[0.68rem] font-bold tracking-[0.28em] text-black/42 uppercase">
+            Plan du site
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
+            {sitemapItems.map((item) => (
+              <Link
+                key={item.label}
+                href={getArtistPath(artist, item.href)}
+                className="text-sm font-medium text-black/64 transition-colors hover:text-black"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+
+        <nav aria-label="Réseaux sociaux et plateformes" className="lg:text-right">
+          <p className="text-[0.68rem] font-bold tracking-[0.28em] text-black/42 uppercase">
+            Réseaux
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-5 lg:justify-end">
+            {platformItems.map((item) => (
             <a
               key={item.platform}
               href={item.url}
@@ -1638,7 +2025,8 @@ function SiteFooter({ artist }: { artist: Artist }) {
             >
               <FooterPlatformIcon platform={item.platform} />
             </a>
-          ))}
+            ))}
+          </div>
         </nav>
       </div>
     </footer>
@@ -1647,11 +2035,13 @@ function SiteFooter({ artist }: { artist: Artist }) {
 
 export function ArtistHomePage({ artist, initialTheme }: ArtistPageProps & { initialTheme?: ThemeMode }) {
   return (
-    <div className="site-shell relative overflow-x-hidden bg-[#0b0908] text-white" data-site-theme="dark">
+    <div className="site-shell relative overflow-x-hidden bg-[#0b0908] text-white" data-site-theme="dark" data-artist={artist.slug}>
       <ArtistHero artist={artist} initialTheme={initialTheme} />
+      <KpiSection artist={artist} />
       <main className="page-main relative">
         <ListenHighlightSection artist={artist} />
         <AboutSection artist={artist} />
+        <PressReleaseSection artist={artist} />
         <WhoIsMartinaSection artist={artist} />
         <VideoSection artist={artist} />
         <GallerySection artist={artist} />
@@ -1674,7 +2064,7 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${caption || 'martina'}.jpg`;
+      a.download = `${caption || artist.slug}.jpg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1700,7 +2090,7 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
   }, [isOpen, artist.gallery.length]);
 
   return (
-    <main className="gallery-shell relative min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#19110d_0%,#241814_22%,#16100d_48%,#0d0908_100%)] text-white">
+    <main className="gallery-shell relative min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#19110d_0%,#241814_22%,#16100d_48%,#0d0908_100%)] text-white" data-artist={artist.slug}>
       <SiteHeader artist={artist} prefixAnchors />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(233,198,154,0.16),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(155,98,66,0.14),transparent_24%)]" />
       <div className="grain-overlay" />
@@ -1710,7 +2100,7 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
       <section className="gallery-section relative overflow-hidden border-b border-white/12 px-5 pb-14 pt-28 sm:px-8 lg:px-12 lg:pb-20 lg:pt-32">
         <div className="relative z-10 mx-auto max-w-7xl">
           <Link
-            href="/"
+            href={getArtistPath(artist, '/')}
             className="theme-chip inline-flex items-center rounded-full border border-white/15 bg-white/8 px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-white transition-colors hover:bg-white/12"
           >
             ← Retour
@@ -1723,7 +2113,7 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
                 {artist.stageName}
               </h1>
               <p className="theme-overlay-panel mt-5 max-w-xl rounded-[1.25rem] bg-black/24 p-4 text-base leading-7 text-white/75 backdrop-blur-sm sm:text-lg">
-                Chaque image est un fragment de l&apos;univers de Martina — scène, lumière, présence.
+                Chaque image est un fragment de l&apos;univers de {artist.stageName} — scène, lumière, présence.
               </p>
             </div>
 
@@ -1875,7 +2265,7 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
   const primaryEmbed = getPrimaryEmbed(artist.streamingLinks);
 
   return (
-    <main className="gallery-shell relative min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#120d0b_0%,#211612_22%,#140f0d_54%,#0d0908_100%)] text-white">
+    <main className="gallery-shell relative min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#120d0b_0%,#211612_22%,#140f0d_54%,#0d0908_100%)] text-white" data-artist={artist.slug}>
       <SiteHeader artist={artist} prefixAnchors />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(233,198,154,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(155,98,66,0.14),transparent_24%)]" />
       <div className="grain-overlay" />
@@ -1892,7 +2282,7 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
             transition={{ duration: 0.6, ease: smoothEase }}
           >
             <Link
-              href="/"
+              href={getArtistPath(artist, '/')}
               className="theme-chip inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-white/80 transition-colors hover:bg-white/12"
             >
               ← Retour
@@ -1985,6 +2375,9 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
                 {artist.shortBio}
               </p>
               <p className="mt-4 text-sm leading-7 text-white/75">{artist.longBio}</p>
+              {artist.bioQuote && (
+                <BioQuote artistName={artist.stageName} quote={artist.bioQuote} compact />
+              )}
             </motion.div>
 
             {/* Press quotes */}

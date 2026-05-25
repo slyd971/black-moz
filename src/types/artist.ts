@@ -10,13 +10,21 @@ export type ArtistGalleryImage = ArtistMediaAsset & {
 };
 
 export type ArtistSocialLink = {
-  platform: 'Instagram' | 'TikTok' | 'YouTube' | 'Spotify' | 'LinkedIn';
+  platform: 'Instagram' | 'Threads' | 'TikTok' | 'YouTube' | 'Spotify' | 'LinkedIn';
   handle: string;
   url: string;
 };
 
 export type ArtistStreamingLink = {
-  platform: 'Spotify' | 'Apple Music' | 'Deezer' | 'YouTube Music' | 'SoundCloud';
+  platform:
+    | 'Spotify'
+    | 'Apple Music'
+    | 'iTunes'
+    | 'Deezer'
+    | 'YouTube Music'
+    | 'SoundCloud'
+    | 'Amazon Music'
+    | 'iHeartRadio';
   url: string;
   label: string;
   embedUrl?: string;
@@ -39,6 +47,16 @@ export type ArtistPressQuote = {
   source: string;
   quote: string;
   kind: string;
+};
+
+export type ArtistPressRelease = {
+  eyebrow: string;
+  title: string;
+  locationDate: string;
+  intro: string;
+  body: string[];
+  quote: string;
+  footer: string;
 };
 
 export type ArtistVideo = {
@@ -79,6 +97,7 @@ export type Artist = ArtistDomainConfig & {
   description: string;
   shortBio: string;
   longBio: string;
+  bioQuote?: string;
   heroImage: ArtistMediaAsset;
   gallery: ArtistGalleryImage[];
   socials: ArtistSocialLink[];
@@ -88,6 +107,7 @@ export type Artist = ArtistDomainConfig & {
   pressContact: ArtistContactPoint | null;
   highlights: ArtistHighlight[];
   pressQuotes: ArtistPressQuote[];
+  pressRelease?: ArtistPressRelease;
   videos: ArtistVideo[];
   seo: ArtistSeo;
 };

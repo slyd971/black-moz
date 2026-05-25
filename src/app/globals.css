@@ -306,6 +306,74 @@ textarea {
   background: color-mix(in srgb, var(--site-bg) 72%, transparent);
 }
 
+/* Sherin — même design, palette bleu/violet */
+:root[data-artist-slug='sherin'] {
+  --site-bg: #070816;
+  --site-panel: rgba(96, 112, 255, 0.08);
+  --site-panel-strong: rgba(142, 84, 255, 0.16);
+  --site-border: rgba(170, 190, 255, 0.18);
+  --site-overlay: rgba(6, 9, 28, 0.38);
+  --site-overlay-strong: rgba(6, 8, 24, 0.74);
+  --site-button-bg: #b8c7ff;
+  --site-button-text: #070816;
+  --site-chip-bg: rgba(96, 112, 255, 0.12);
+  --site-chip-active-bg: #b8c7ff;
+  --site-chip-active-text: #070816;
+  --site-shadow: 0 24px 90px rgba(30, 40, 130, 0.32);
+}
+
+:root[data-artist-slug='sherin'] .text-\[\#f1d3a1\],
+:root[data-artist-slug='sherin'] .group:hover .group-hover\:text-\[\#f1d3a1\],
+:root[data-artist-slug='sherin'] .hover\:text-\[\#f1d3a1\]:hover {
+  color: #b8c7ff;
+}
+
+:root[data-artist-slug='sherin'] .bg-\[\#f1d3a1\] {
+  background: linear-gradient(90deg, #3f8cff, #b855ff) !important;
+}
+
+:root[data-artist-slug='sherin'] .warm-spotlight {
+  background: radial-gradient(circle, rgba(112, 138, 255, 0.24), transparent 68%);
+}
+
+[data-artist='sherin'].site-shell,
+[data-artist='sherin'].gallery-shell {
+  background: #070816;
+}
+
+[data-artist='sherin'] .hero-luxury,
+[data-artist='sherin'] .hero-street,
+[data-artist='sherin'] .hero-futuristic {
+  background: #070816;
+}
+
+[data-artist='sherin'] .hero-overlay-primary {
+  background: linear-gradient(180deg, rgba(9, 15, 52, 0.12) 0%, rgba(22, 13, 60, 0.24) 34%, rgba(5, 6, 20, 0.8) 100%);
+}
+
+[data-artist='sherin'] .hero-overlay-secondary,
+[data-artist='sherin'] .hero-overlay-accent {
+  background: radial-gradient(circle at top right, rgba(70, 140, 255, 0.32), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(178, 72, 255, 0.26), transparent 32%),
+    linear-gradient(135deg, rgba(38, 73, 210, 0.18), transparent 58%);
+}
+
+[data-artist='sherin'] .section-spotify > .absolute:first-child,
+[data-artist='sherin'] .section-video > .absolute:first-child,
+[data-artist='sherin'] .section-gallery > .absolute:first-child,
+[data-artist='sherin'] .section-about > .absolute:first-child,
+[data-artist='sherin'] .section-contact > .absolute:first-child {
+  background: linear-gradient(180deg, rgba(8, 13, 43, 0.96), rgba(25, 12, 55, 0.46));
+}
+
+[data-artist='sherin'] .section-spotify > .ambient-shift,
+[data-artist='sherin'] .section-gallery > .absolute:nth-child(2),
+[data-artist='sherin'] .section-video > .absolute:nth-child(2),
+[data-artist='sherin'] .section-contact > .absolute:nth-child(2) {
+  background: radial-gradient(circle at top left, rgba(72, 145, 255, 0.22), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(179, 80, 255, 0.2), transparent 30%);
+}
+
 /* ══════════════════════════════════════════════════════════
    SECTIONS — SYSTÈME ::BEFORE
    ══════════════════════════════════════════════════════════ */

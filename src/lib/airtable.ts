@@ -1,5 +1,6 @@
 import type { Artist, ArtistGalleryImage, ArtistVideo, ArtistContactPoint, ArtistHighlight, ArtistPressQuote } from '@/types/artist';
 import { martinaArtist } from '@/data/artists/martina';
+import { artists } from '@/data/artists';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 
@@ -226,5 +227,6 @@ export function getAirtableRevalidateSlugFromRequestBody(body: unknown): string 
 
 export async function resolveArtist(slug: string): Promise<Artist> {
   const fromAirtable = await getAirtableArtist(slug);
-  return fromAirtable ?? martinaArtist;
+  const fromStaticData = artists.find((artist) => artist.slug === slug);
+  return fromAirtable ?? fromStaticData ?? martinaArtist;
 }
