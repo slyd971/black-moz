@@ -3,7 +3,7 @@ import type { Artist } from '@/types/artist';
 export const sherinArtist: Artist = {
   slug: 'sherin',
   domain: null,
-  vercelSubdomain: 'singer-presskit.vercel.app',
+  vercelSubdomain: 'sherin.vercel.app',
   name: 'Sherin Morsy',
   stageName: 'Sherin',
   tagline: 'Reggaeton mélodique, élégance européenne et énergie afro-latine.',
@@ -140,24 +140,32 @@ export const sherinArtist: Artist = {
   },
   videos: [],
   seo: {
-    title: 'Sherin — Press Kit Officiel | Reggaeton mélodique',
+    title: 'Sherin | Press Kit Officiel — Tanguita Azul',
     description:
-      'Press kit officiel de Sherin, artiste indépendante basée à Paris. Bio, galerie photos, Tanguita Azul, Spotify, contacts presse et booking.',
-    keywords: ['Sherin', 'Tanguita Azul', 'reggaeton mélodique', 'artiste latine', 'press kit artiste'],
-    ogImage: '/sherin/hero-sherin.png',
-    ogImageWidth: 768,
-    ogImageHeight: 1344,
-    ogImageAlt: 'Sherin — Presskit — Tanguita Azul',
+      'Press kit officiel de Sherin : Tanguita Azul, bio, photos presse, liens streaming, contacts booking et presse.',
+    keywords: [
+      'Sherin',
+      'Sherin Morsy',
+      'Tanguita Azul',
+      'reggaeton mélodique',
+      'artiste latine Paris',
+      'press kit Sherin',
+      'booking Sherin',
+    ],
+    ogImage: '/sherin/og-image.jpg',
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
+    ogImageAlt: 'Sherin — press kit officiel Tanguita Azul',
     pages: {
       gallery: {
-        title: 'Sherin | Galerie photos',
+        title: 'Sherin | Photos presse et galerie officielle',
         description:
-          'Galerie officielle de Sherin : portraits, visuels éditoriaux et images presse.',
+          'Photos presse officielles de Sherin : portraits, images studio, visuels éditoriaux et galerie haute qualité.',
       },
       listen: {
         title: 'Sherin | Écouter — Tanguita Azul',
         description:
-          'Écoutez Tanguita Azul de Sherin sur Spotify et plateformes de streaming.',
+          'Écoutez Tanguita Azul de Sherin sur Spotify, Apple Music, Deezer, Amazon Music, iTunes et iHeartRadio.',
       },
     },
   },

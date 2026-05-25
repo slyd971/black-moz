@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import { martinaArtist } from '@/data/artists/martina';
+import { sherinArtist } from '@/data/artists/sherin';
 
-const hostname = martinaArtist.domain ?? martinaArtist.vercelSubdomain;
+const hostname = sherinArtist.domain ?? sherinArtist.vercelSubdomain;
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${hostname}`),
   title: {
-    default: martinaArtist.seo.title,
+    default: sherinArtist.seo.title,
     template: '%s',
   },
-  description: martinaArtist.seo.description,
+  description: sherinArtist.seo.description,
 };
 
 export const viewport: Viewport = {

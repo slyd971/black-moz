@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next';
-import { martinaArtist } from '@/data/artists/martina';
+import { sherinArtist } from '@/data/artists/sherin';
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
-  const host = martinaArtist.domain ?? martinaArtist.vercelSubdomain;
+  const host = sherinArtist.domain ?? sherinArtist.vercelSubdomain;
 
   return {
     rules: {
