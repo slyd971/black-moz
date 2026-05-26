@@ -266,6 +266,27 @@ function HeroSocialBand({ artist }: { artist: Artist }) {
   );
 }
 
+function HeroCtas({ artist, align = 'left' }: { artist: Artist; align?: 'left' | 'center' }) {
+  const justifyClass = align === 'center' ? 'justify-center' : 'justify-start';
+
+  return (
+    <div className={`flex flex-wrap gap-3 ${justifyClass}`}>
+      <Link
+        href={getArtistPath(artist, '/listen')}
+        className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-black uppercase tracking-[0.18em] text-[#070816] shadow-[0_18px_45px_rgba(255,255,255,0.16)] transition-transform hover:-translate-y-0.5 sm:px-7"
+      >
+        Écouter
+      </Link>
+      <a
+        href={`mailto:${artist.bookingEmail}`}
+        className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 bg-white/10 px-6 text-sm font-black uppercase tracking-[0.18em] text-white backdrop-blur-md transition-colors hover:bg-white/16 sm:px-7"
+      >
+        Booking
+      </a>
+    </div>
+  );
+}
+
 function HeroPlatformIcon({ platform }: { platform: string }) {
   const cls = 'h-[24px] w-[24px] transition-transform duration-200 group-hover:scale-110';
   if (platform === 'Instagram') return (
@@ -484,6 +505,12 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
               </Link>
             );
           })}
+          <Link
+            href={getArtistPath(artist, prefixAnchors ? '/#contact' : '/#contact')}
+            className="ml-1 inline-flex min-h-10 items-center rounded-full bg-white px-5 text-xs font-black uppercase tracking-[0.18em] text-[#070816] shadow-[0_14px_32px_rgba(255,255,255,0.14)] transition-transform hover:-translate-y-0.5"
+          >
+            Booking
+          </Link>
         </nav>
         <button
           type="button"
@@ -525,6 +552,13 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
               );
             })}
           </div>
+          <Link
+            href={getArtistPath(artist, prefixAnchors ? '/#contact' : '/#contact')}
+            onClick={() => setMobileMenuOpen(false)}
+            className="mt-2 flex min-h-11 items-center justify-center rounded-[0.95rem] bg-white px-4 text-[0.7rem] font-black uppercase tracking-[0.2em] text-[#070816]"
+          >
+            Booking
+          </Link>
         </div>
       )}
     </header>
@@ -630,14 +664,23 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
                 className="flex flex-col gap-6 md:flex-row md:items-end md:gap-8"
                 style={{ y: y2 }}
               >
-                <motion.p
-                  className="max-w-xl text-base leading-relaxed font-light text-white/82 md:text-xl lg:text-2xl"
-                  initial={{ y: 22, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 0.75, ease: smoothEase }}
-                >
-                  {artist.tagline}
-                </motion.p>
+                <div className="max-w-xl space-y-5">
+                  <motion.p
+                    className="text-base leading-relaxed font-light text-white/82 md:text-xl lg:text-2xl"
+                    initial={{ y: 22, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.75, ease: smoothEase }}
+                  >
+                    {artist.tagline}
+                  </motion.p>
+                  <motion.div
+                    initial={{ y: 18, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.75, delay: 0.95, ease: smoothEase }}
+                  >
+                    <HeroCtas artist={artist} />
+                  </motion.div>
+                </div>
                 <div className="hero-info-panel theme-panel max-w-full space-y-2 rounded-[1.25rem] bg-black/24 p-4 backdrop-blur-sm md:text-right">
                   <motion.p
                     className="text-sm font-medium tracking-[0.28em] text-white/70 uppercase sm:tracking-[0.35em] md:text-base"
@@ -743,6 +786,9 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
                 >
                   {artist.city} • {artist.country}
                 </motion.p>
+                <div className="pt-3">
+                  <HeroCtas artist={artist} align="center" />
+                </div>
               </motion.div>
             </div>
           </div>
@@ -809,6 +855,7 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
             >
               {artist.shortBio}
             </motion.p>
+            <HeroCtas artist={artist} align="center" />
           </motion.div>
         </div>
       </div>
