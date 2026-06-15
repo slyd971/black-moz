@@ -1820,7 +1820,13 @@ function ContactSection({ artist }: { artist: Artist }) {
     artist.managementContact
       ? {
           label: 'Management',
-          value: artist.managementContact.email,
+          value: [
+            artist.managementContact.name,
+            artist.managementContact.phone,
+            artist.managementContact.email,
+          ]
+            .filter(Boolean)
+            .join('\n'),
           href: `mailto:${artist.managementContact.email}`,
           kind: 'management' as const,
         }
@@ -1891,7 +1897,7 @@ function ContactSection({ artist }: { artist: Artist }) {
                   </p>
                 </div>
                 <div className="min-w-0 pl-0 sm:pl-8">
-                  <p className="mt-3 break-all text-sm leading-6 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-lg sm:leading-7 lg:text-xl">
+                  <p className="mt-3 whitespace-pre-line break-words text-sm leading-6 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-lg sm:leading-7 lg:text-xl">
                     {item.value}
                   </p>
                 </div>

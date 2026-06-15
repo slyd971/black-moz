@@ -83,8 +83,13 @@ export const sherinArtist: Artist = {
       url: 'https://www.iheart.com/artist/id-49163203/albums/id-370723056',
     },
   ],
-  bookingEmail: 'sherin@futurmgmt.com',
-  managementContact: null,
+  bookingEmail: 'Sherinbooking@gmail.com',
+  managementContact: {
+    name: 'John Laplank',
+    email: 'Sherinbooking@gmail.com',
+    phone: '06 59 05 04 22',
+    role: 'Management',
+  },
   pressContact: {
     name: 'Sherin Press Office',
     email: 'sherin@futurmgmt.com',
