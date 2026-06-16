@@ -1817,7 +1817,7 @@ function ContactSection({ artist }: { artist: Artist }) {
       href: `mailto:${artist.bookingEmail}`,
       kind: 'email' as const,
     },
-    artist.managementContact
+    artist.managementContact && artist.slug !== 'sherin'
       ? {
           label: 'Management',
           value: [
@@ -1831,7 +1831,7 @@ function ContactSection({ artist }: { artist: Artist }) {
           kind: 'management' as const,
         }
       : null,
-    artist.pressContact
+    artist.pressContact && artist.slug !== 'sherin'
       ? {
           label: 'Presse',
           value: artist.pressContact.email,
@@ -1875,35 +1875,70 @@ function ContactSection({ artist }: { artist: Artist }) {
         </div>
 
         <div className="border-t border-white/12">
-          <div className="grid grid-cols-2">
-            {contactItems.map((item, index) => (
-              <a
-                key={item.label}
-                href={item.href}
-                target={item.href.startsWith('mailto:') ? undefined : '_blank'}
-                rel={item.href.startsWith('mailto:') ? undefined : 'noreferrer'}
-                className="group grid min-h-[8rem] grid-cols-1 border-b border-white/10 px-3 py-5 transition-colors hover:bg-white/[0.02] sm:px-6 sm:min-h-[10rem] lg:min-h-[11rem] lg:py-7"
-                style={{
-                  borderRight:
-                    index % 2 === 0 && index !== contactItems.length - 1
-                      ? '1px solid rgba(255,255,255,0.10)'
-                      : undefined,
-                }}
-              >
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <ContactLogo kind={item.kind} />
-                  <p className="text-[0.62rem] uppercase tracking-[0.28em] text-white/72 sm:text-[0.72rem] sm:tracking-[0.32em]">
-                    {item.label}
-                  </p>
-                </div>
-                <div className="min-w-0 pl-0 sm:pl-8">
-                  <p className="mt-3 whitespace-pre-line break-words text-sm leading-6 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-lg sm:leading-7 lg:text-xl">
-                    {item.value}
-                  </p>
-                </div>
-              </a>
-            ))}
-          </div>
+          {contactItems.length === 2 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              {contactItems.map((item, index) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target={item.href.startsWith('mailto:') ? undefined : '_blank'}
+                  rel={item.href.startsWith('mailto:') ? undefined : 'noreferrer'}
+                  className="group flex flex-col justify-between border-b border-white/10 px-6 py-9 transition-colors hover:bg-white/[0.03] sm:min-h-[16rem] sm:px-8 sm:py-10 lg:min-h-[20rem] lg:px-10 lg:py-14"
+                  style={{
+                    borderRight: index === 0 ? '1px solid rgba(255,255,255,0.10)' : undefined,
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <ContactLogo kind={item.kind} />
+                    <p className="text-[0.68rem] uppercase tracking-[0.38em] text-white/55">
+                      {item.label}
+                    </p>
+                  </div>
+                  <div className="mt-8">
+                    <p className="whitespace-pre-line break-words text-xl leading-7 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-2xl sm:leading-8 lg:text-3xl lg:leading-9">
+                      {item.value}
+                    </p>
+                    <div className="mt-5 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.3em] text-white/35 transition-colors group-hover:text-[#f1d3a1]/60">
+                      <span>{item.href.startsWith('mailto:') ? 'Écrire' : 'Suivre'}</span>
+                      <svg viewBox="0 0 16 16" className="h-3 w-3 translate-x-0 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 8h10M9 4l4 4-4 4" />
+                      </svg>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2">
+              {contactItems.map((item, index) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target={item.href.startsWith('mailto:') ? undefined : '_blank'}
+                  rel={item.href.startsWith('mailto:') ? undefined : 'noreferrer'}
+                  className="group grid min-h-[8rem] grid-cols-1 border-b border-white/10 px-3 py-5 transition-colors hover:bg-white/[0.02] sm:px-6 sm:min-h-[10rem] lg:min-h-[11rem] lg:py-7"
+                  style={{
+                    borderRight:
+                      index % 2 === 0 && index !== contactItems.length - 1
+                        ? '1px solid rgba(255,255,255,0.10)'
+                        : undefined,
+                  }}
+                >
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <ContactLogo kind={item.kind} />
+                    <p className="text-[0.62rem] uppercase tracking-[0.28em] text-white/72 sm:text-[0.72rem] sm:tracking-[0.32em]">
+                      {item.label}
+                    </p>
+                  </div>
+                  <div className="min-w-0 pl-0 sm:pl-8">
+                    <p className="mt-3 whitespace-pre-line break-words text-sm leading-6 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-lg sm:leading-7 lg:text-xl">
+                      {item.value}
+                    </p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
