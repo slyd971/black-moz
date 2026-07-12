@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ArtistGalleryPage } from '@/components/press-kit';
-import { sherinArtist } from '@/data/artists/sherin';
+import { blackmozArtist } from '@/data/artists/blackmoz';
 import { buildArtistMetadata } from '@/lib/seo';
 import { resolveArtist } from '@/lib/airtable';
 import { getRequestedArtistSlug, type ArtistSearchParams } from '@/lib/requested-artist';
@@ -10,11 +10,11 @@ type PageProps = {
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
-  const artist = await resolveArtist(await getRequestedArtistSlug(searchParams, sherinArtist.slug));
+  const artist = await resolveArtist(await getRequestedArtistSlug(searchParams, blackmozArtist.slug));
   return buildArtistMetadata(artist, '/gallery');
 }
 
 export default async function GalleryPage({ searchParams }: PageProps) {
-  const artist = await resolveArtist(await getRequestedArtistSlug(searchParams, sherinArtist.slug));
+  const artist = await resolveArtist(await getRequestedArtistSlug(searchParams, blackmozArtist.slug));
   return <ArtistGalleryPage artist={artist} />;
 }

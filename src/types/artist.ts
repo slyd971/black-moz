@@ -10,7 +10,7 @@ export type ArtistGalleryImage = ArtistMediaAsset & {
 };
 
 export type ArtistSocialLink = {
-  platform: 'Instagram' | 'Threads' | 'TikTok' | 'YouTube' | 'Spotify' | 'LinkedIn';
+  platform: 'Instagram' | 'Threads' | 'TikTok' | 'YouTube' | 'Spotify' | 'LinkedIn' | 'Facebook';
   handle: string;
   url: string;
 };

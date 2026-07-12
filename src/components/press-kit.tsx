@@ -46,12 +46,16 @@ function SectionIntro({
   title,
   body,
   align = 'left',
+  slug,
 }: {
   eyebrow: string;
   title: string;
   body: string;
   align?: 'left' | 'center';
+  slug?: string;
 }) {
+  const isLight = slug === 'blackmoz';
+
   return (
     <motion.div
       className={align === 'center' ? 'mx-auto max-w-3xl text-center' : 'max-w-2xl'}
@@ -60,11 +64,11 @@ function SectionIntro({
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.7, ease: smoothEase }}
     >
-      <p className="mb-4 text-[0.72rem] uppercase tracking-[0.45em] text-white/55">{eyebrow}</p>
-      <h2 className="text-4xl font-black tracking-[-0.06em] text-white sm:text-5xl lg:text-7xl">
+      <p className={`mb-4 text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>{eyebrow}</p>
+      <h2 className={`text-4xl font-black tracking-[-0.06em] sm:text-5xl lg:text-7xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
         {title}
       </h2>
-      <p className="mt-5 text-base leading-7 text-white/75 sm:text-lg">{body}</p>
+      <p className={`mt-5 text-base leading-7 sm:text-lg ${isLight ? 'text-[#2a2018]/78' : 'text-white/75'}`}>{body}</p>
     </motion.div>
   );
 }
@@ -72,42 +76,50 @@ function SectionIntro({
 function BioQuote({
   artistName,
   quote,
+  slug,
   compact = false,
 }: {
   artistName: string;
   quote: string;
+  slug: string;
   compact?: boolean;
 }) {
+  const isLight = slug === 'blackmoz';
+  const accentBorder = isLight ? 'border-[#8b5e3c]/60' : 'border-violet-300/70';
+  const panelClass = isLight
+    ? 'relative mt-8 max-w-2xl overflow-hidden rounded-lg border border-[#2a2018]/12 bg-[linear-gradient(135deg,rgba(180,139,110,0.22),rgba(180,139,110,0.08),rgba(255,255,255,0.4))] px-6 py-6 shadow-2xl shadow-black/10 backdrop-blur-sm sm:px-8 sm:py-7'
+    : 'relative mt-8 max-w-2xl overflow-hidden rounded-lg border border-violet-300/20 bg-[linear-gradient(135deg,rgba(124,58,237,0.16),rgba(217,70,239,0.09),rgba(255,255,255,0.045))] px-6 py-6 shadow-2xl shadow-violet-950/20 backdrop-blur-sm sm:px-8 sm:py-7';
+  const barClass = isLight
+    ? 'absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#c9a27c] via-[#b48b6e] to-[#8b5e3c]'
+    : 'absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-violet-300 via-fuchsia-300 to-violet-500';
+  const quoteMarkClass = isLight
+    ? 'absolute right-5 top-3 text-7xl font-black leading-none text-[#b48b6e]/[0.16]'
+    : 'absolute right-5 top-3 text-7xl font-black leading-none text-violet-100/[0.08]';
+  const captionAccent = isLight ? 'text-[#6b4a2e]' : 'text-violet-100';
+  const blockquoteClass = isLight
+    ? compact
+      ? 'text-base font-semibold leading-7 text-[#2a2018]/88 italic'
+      : 'relative text-xl font-black leading-snug tracking-[-0.03em] text-[#2a2018] sm:text-2xl'
+    : compact
+      ? 'text-base font-semibold leading-7 text-white/88 italic'
+      : 'relative text-xl font-black leading-snug tracking-[-0.03em] text-white sm:text-2xl';
+
   return (
-    <figure
-      className={
-        compact
-          ? 'relative mt-5 border-l-2 border-violet-300/70 pl-5'
-          : 'relative mt-8 max-w-2xl overflow-hidden rounded-lg border border-violet-300/20 bg-[linear-gradient(135deg,rgba(124,58,237,0.16),rgba(217,70,239,0.09),rgba(255,255,255,0.045))] px-6 py-6 shadow-2xl shadow-violet-950/20 backdrop-blur-sm sm:px-8 sm:py-7'
-      }
-    >
+    <figure className={compact ? `relative mt-5 border-l-2 ${accentBorder} pl-5` : panelClass}>
       {!compact && (
         <>
-          <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-violet-300 via-fuchsia-300 to-violet-500" />
-          <div className="absolute right-5 top-3 text-7xl font-black leading-none text-violet-100/[0.08]">
-            &ldquo;
-          </div>
+          <div className={barClass} />
+          <div className={quoteMarkClass}>&ldquo;</div>
         </>
       )}
-      <blockquote
-        className={
-          compact
-            ? 'text-base font-semibold leading-7 text-white/88 italic'
-            : 'relative text-xl font-black leading-snug tracking-[-0.03em] text-white sm:text-2xl'
-        }
-      >
+      <blockquote className={blockquoteClass}>
         &ldquo;{quote}&rdquo;
       </blockquote>
       <figcaption
         className={
           compact
-            ? 'mt-3 text-[0.68rem] uppercase tracking-[0.3em] text-violet-100/48'
-            : 'mt-5 text-[0.68rem] font-bold uppercase tracking-[0.32em] text-violet-100/55'
+            ? `mt-3 text-[0.68rem] uppercase tracking-[0.3em] ${captionAccent}/${isLight ? '100' : '48'}`
+            : `mt-5 text-[0.68rem] font-bold uppercase tracking-[0.32em] ${captionAccent}/${isLight ? '100' : '55'}`
         }
       >
         {artistName} · Artist statement
@@ -157,8 +169,25 @@ function KpiSection({ artist }: { artist: Artist }) {
     return null;
   }
 
+  const isLight = artist.slug === 'blackmoz';
+  const bandClass = isLight
+    ? 'relative z-10 border-y border-[#2a2018]/10 bg-[#e3dbc9] px-5 py-6 sm:px-8 lg:px-12'
+    : 'relative z-10 border-y border-white/10 bg-[#070816] px-5 py-6 sm:px-8 lg:px-12';
+  const cardClass = isLight
+    ? 'relative flex min-h-[9.5rem] w-full min-w-0 flex-col justify-between overflow-hidden rounded-lg border border-[#2a2018]/16 bg-[linear-gradient(135deg,rgba(255,255,255,0.88),rgba(180,139,110,0.14))] px-5 py-5 shadow-[0_14px_34px_rgba(60,40,20,0.14)] sm:px-6'
+    : 'relative flex min-h-[9.5rem] w-full min-w-0 flex-col justify-between overflow-hidden rounded-lg border border-white/10 bg-[linear-gradient(135deg,rgba(96,112,255,0.14),rgba(184,85,255,0.09),rgba(255,255,255,0.035))] px-5 py-5 shadow-[0_20px_70px_rgba(5,6,20,0.24)] sm:px-6';
+  const labelClass = isLight
+    ? 'text-[0.62rem] font-bold uppercase tracking-[0.22em] text-[#6b4a2e]'
+    : 'text-[0.62rem] font-bold uppercase tracking-[0.22em] text-violet-100/62';
+  const valueClass = isLight
+    ? 'mt-3 max-w-full bg-gradient-to-r from-[#2a2018] via-[#5a3d24] to-[#8b5e3c] bg-clip-text text-3xl font-black leading-none text-transparent [overflow-wrap:anywhere] sm:text-4xl'
+    : 'mt-3 max-w-full bg-gradient-to-r from-white via-violet-100 to-fuchsia-200 bg-clip-text text-3xl font-black leading-none text-transparent [overflow-wrap:anywhere] sm:text-4xl';
+  const detailClass = isLight
+    ? 'mt-3 text-xs leading-5 text-[#2a2018]/78 sm:text-sm'
+    : 'mt-3 text-xs leading-5 text-violet-50/64 sm:text-sm';
+
   return (
-    <section className="relative z-10 border-y border-white/10 bg-[#070816] px-5 py-6 sm:px-8 lg:px-12">
+    <section className={bandClass}>
       <motion.div
         className="mx-auto grid max-w-7xl gap-3 text-center sm:grid-cols-3 sm:text-left"
         initial="hidden"
@@ -176,7 +205,7 @@ function KpiSection({ artist }: { artist: Artist }) {
         {artist.highlights.map((highlight, index) => (
           <motion.article
             key={highlight.label}
-            className="relative flex min-h-[9.5rem] w-full min-w-0 flex-col justify-between overflow-hidden rounded-lg border border-white/10 bg-[linear-gradient(135deg,rgba(96,112,255,0.14),rgba(184,85,255,0.09),rgba(255,255,255,0.035))] px-5 py-5 shadow-[0_20px_70px_rgba(5,6,20,0.24)] sm:px-6"
+            className={cardClass}
             variants={{
               hidden: { opacity: 0, y: 24, scale: 0.96 },
               visible: { opacity: 1, y: 0, scale: 1 },
@@ -184,15 +213,11 @@ function KpiSection({ artist }: { artist: Artist }) {
             transition={{ duration: 0.75, delay: index * 0.03, ease: smoothEase }}
             whileHover={{ y: -3 }}
           >
-            <p className="text-[0.62rem] font-bold uppercase tracking-[0.22em] text-violet-100/62">
-              {highlight.label}
-            </p>
-            <p className="mt-3 max-w-full bg-gradient-to-r from-white via-violet-100 to-fuchsia-200 bg-clip-text text-3xl font-black leading-none text-transparent [overflow-wrap:anywhere] sm:text-4xl">
+            <p className={labelClass}>{highlight.label}</p>
+            <p className={valueClass}>
               <AnimatedKpiValue value={highlight.value} />
             </p>
-            <p className="mt-3 text-xs leading-5 text-violet-50/64 sm:text-sm">
-              {highlight.detail}
-            </p>
+            <p className={detailClass}>{highlight.detail}</p>
           </motion.article>
         ))}
       </motion.div>
@@ -390,6 +415,12 @@ function HeroPlatformIcon({ platform }: { platform: string }) {
       <circle cx="12" cy="11.7" r="1.15" fill="#fff" />
     </svg>
   );
+  if (platform === 'Facebook') return (
+    <svg viewBox="0 0 24 24" fill="none" className={cls}>
+      <circle cx="12" cy="12" r="10" fill="#1877F2" />
+      <path d="M13.6 21.8v-7.3h2.45l.37-2.85h-2.82v-1.82c0-.82.23-1.38 1.4-1.38h1.5V5.9c-.26-.03-1.15-.11-2.18-.11-2.16 0-3.64 1.32-3.64 3.74v2.09H8.2v2.85h2.48v7.3h2.92Z" fill="#fff" />
+    </svg>
+  );
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="#8FA8FF" strokeWidth="1.8" className={cls}>
       <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
@@ -460,6 +491,7 @@ function ContactLogo({
 function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixAnchors?: boolean }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navItems = useMemo(() => buildNavItems(), []);
+  const isLight = artist.slug === 'blackmoz';
 
   const resolveHref = (href: string) =>
     getArtistPath(artist, href.startsWith('#') && prefixAnchors ? `/${href}` : href);
@@ -477,10 +509,12 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-8 sm:pt-6">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-0 py-0 sm:px-6 lg:site-header-shell lg:rounded-full lg:border lg:border-white/15 lg:bg-black/35 lg:px-4 lg:py-3 lg:backdrop-blur-xl">
+      <div
+        className={`mx-auto flex max-w-7xl items-center justify-between px-0 py-0 sm:px-6 lg:site-header-shell lg:rounded-full lg:border lg:px-4 lg:py-3 lg:backdrop-blur-xl ${isLight ? 'lg:border-[#2a2018]/15 lg:bg-[#ece6d9]/55' : 'lg:border-white/15 lg:bg-black/35'}`}
+      >
         <Link
           href={getArtistPath(artist, '/')}
-          className="hidden text-sm font-black tracking-[0.35em] text-white uppercase lg:inline-flex"
+          className={`hidden text-sm font-black tracking-[0.35em] uppercase lg:inline-flex ${isLight ? 'text-[#2a2018]' : 'text-white'}`}
         >
           {artist.stageName}
         </Link>
@@ -491,7 +525,7 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
               <a
                 key={item.href}
                 href={href}
-                className="nav-link text-xs font-medium tracking-[0.28em] text-white uppercase transition-colors hover:text-[#f1d3a1]"
+                className={`nav-link text-xs font-medium tracking-[0.28em] uppercase transition-colors hover:text-[#f1d3a1] ${isLight ? 'text-[#2a2018]' : 'text-white'}`}
               >
                 {item.label}
               </a>
@@ -499,7 +533,7 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
               <Link
                 key={item.href}
                 href={href}
-                className="nav-link text-xs font-medium tracking-[0.28em] text-white uppercase transition-colors hover:text-[#f1d3a1]"
+                className={`nav-link text-xs font-medium tracking-[0.28em] uppercase transition-colors hover:text-[#f1d3a1] ${isLight ? 'text-[#2a2018]' : 'text-white'}`}
               >
                 {item.label}
               </Link>
@@ -507,7 +541,11 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
           })}
           <Link
             href={getArtistPath(artist, prefixAnchors ? '/#contact' : '/#contact')}
-            className="ml-1 inline-flex min-h-10 items-center rounded-full bg-white px-5 text-xs font-black uppercase tracking-[0.18em] text-[#070816] shadow-[0_14px_32px_rgba(255,255,255,0.14)] transition-transform hover:-translate-y-0.5"
+            className={
+              isLight
+                ? 'ml-1 inline-flex min-h-10 items-center rounded-full bg-[#2a2018] px-5 text-xs font-black uppercase tracking-[0.18em] text-[#f3ead9] shadow-[0_14px_32px_rgba(42,32,24,0.18)] transition-transform hover:-translate-y-0.5'
+                : 'ml-1 inline-flex min-h-10 items-center rounded-full bg-white px-5 text-xs font-black uppercase tracking-[0.18em] text-[#070816] shadow-[0_14px_32px_rgba(255,255,255,0.14)] transition-transform hover:-translate-y-0.5'
+            }
           >
             Booking
           </Link>
@@ -519,15 +557,17 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
           aria-label="Toggle navigation"
         >
           <span className="space-y-1.5">
-            <span className="block h-px w-4 bg-white/90 transition-transform" />
-            <span className="block h-px w-4 bg-white/90 transition-transform" />
-            <span className="block h-px w-4 bg-white/90 transition-transform" />
+            <span className={`block h-px w-4 transition-transform ${isLight ? 'bg-[#2a2018]/85' : 'bg-white/90'}`} />
+            <span className={`block h-px w-4 transition-transform ${isLight ? 'bg-[#2a2018]/85' : 'bg-white/90'}`} />
+            <span className={`block h-px w-4 transition-transform ${isLight ? 'bg-[#2a2018]/85' : 'bg-white/90'}`} />
           </span>
         </button>
       </div>
 
       {mobileMenuOpen && (
-        <div className="mobile-menu-shell mx-auto mt-2 max-w-7xl rounded-[1.5rem] border border-white/15 bg-black/70 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.28)] backdrop-blur-2xl lg:hidden">
+        <div
+          className={`mobile-menu-shell mx-auto mt-2 max-w-7xl rounded-[1.5rem] border p-3 shadow-[0_20px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl lg:hidden ${isLight ? 'border-[#2a2018]/15 bg-[#ece6d9]/94' : 'border-white/15 bg-black/70'}`}
+        >
           <div className="grid grid-cols-2 gap-2">
             {navItems.map((item) => {
               const href = resolveHref(item.href);
@@ -536,7 +576,7 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
                   key={item.href}
                   href={href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="theme-chip rounded-[0.95rem] border border-white/10 bg-white/6 px-3 py-2.5 text-[0.68rem] font-medium tracking-[0.2em] text-white uppercase"
+                  className={`theme-chip rounded-[0.95rem] border px-3 py-2.5 text-[0.68rem] font-medium tracking-[0.2em] uppercase ${isLight ? 'border-[#2a2018]/12 bg-[#2a2018]/5 text-[#2a2018]' : 'border-white/10 bg-white/6 text-white'}`}
                 >
                   {item.label}
                 </a>
@@ -545,7 +585,7 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
                   key={item.href}
                   href={href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="theme-chip rounded-[0.95rem] border border-white/10 bg-white/6 px-3 py-2.5 text-[0.68rem] font-medium tracking-[0.2em] text-white uppercase"
+                  className={`theme-chip rounded-[0.95rem] border px-3 py-2.5 text-[0.68rem] font-medium tracking-[0.2em] uppercase ${isLight ? 'border-[#2a2018]/12 bg-[#2a2018]/5 text-[#2a2018]' : 'border-white/10 bg-white/6 text-white'}`}
                 >
                   {item.label}
                 </Link>
@@ -555,7 +595,7 @@ function SiteHeader({ artist, prefixAnchors = false }: { artist: Artist; prefixA
           <Link
             href={getArtistPath(artist, prefixAnchors ? '/#contact' : '/#contact')}
             onClick={() => setMobileMenuOpen(false)}
-            className="mt-2 flex min-h-11 items-center justify-center rounded-[0.95rem] bg-white px-4 text-[0.7rem] font-black uppercase tracking-[0.2em] text-[#070816]"
+            className={`mt-2 flex min-h-11 items-center justify-center rounded-[0.95rem] px-4 text-[0.7rem] font-black uppercase tracking-[0.2em] ${isLight ? 'bg-[#2a2018] text-[#f3ead9]' : 'bg-white text-[#070816]'}`}
           >
             Booking
           </Link>
@@ -579,7 +619,9 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
   const heroImageClass =
     artist.slug === 'sherin'
       ? 'object-cover object-[center_22%] opacity-90'
-      : 'object-cover object-center opacity-90';
+      : artist.slug === 'blackmoz'
+        ? 'object-cover object-[center_16%] opacity-90'
+        : 'object-cover object-center opacity-90';
 
   useEffect(() => {
     if (initialTheme) return; // theme forced by route, ignore localStorage
@@ -946,12 +988,20 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
 }
 
 function AboutSection({ artist }: { artist: Artist }) {
+  const isLight = artist.slug === 'blackmoz';
+
   return (
     <section
       id="about"
-      className="press-section section-about relative overflow-hidden border-t border-white/12 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32"
+      className={`press-section section-about relative overflow-hidden border-t px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32 ${isLight ? 'border-[#2a2018]/10' : 'border-white/12'}`}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,246,230,0.05),rgba(33,23,18,0.42)_58%,transparent)]" />
+      <div
+        className={
+          isLight
+            ? 'absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.3),rgba(180,139,110,0.14)_58%,transparent)]'
+            : 'absolute inset-0 bg-[linear-gradient(180deg,rgba(255,246,230,0.05),rgba(33,23,18,0.42)_58%,transparent)]'
+        }
+      />
       <div className="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_center,rgba(226,192,148,0.16),transparent_56%)] blur-2xl" />
       <div className="grain-overlay" />
       <div className="paper-texture" />
@@ -959,12 +1009,14 @@ function AboutSection({ artist }: { artist: Artist }) {
       <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-stretch lg:gap-10">
         <div className="flex flex-col justify-between gap-8 lg:gap-10">
           <div>
-            <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">L&apos;artiste</p>
-            <h2 className="mt-4 max-w-xl text-4xl font-black tracking-[-0.06em] text-white sm:text-5xl lg:text-7xl">
+            <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>L&apos;artiste</p>
+            <h2 className={`mt-4 max-w-xl text-4xl font-black tracking-[-0.06em] sm:text-5xl lg:text-7xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
               À propos de {artist.stageName}
             </h2>
-            <p className="mt-5 max-w-xl text-base leading-7 text-white/75 sm:text-lg">{artist.longBio}</p>
-            {artist.bioQuote && <BioQuote artistName={artist.stageName} quote={artist.bioQuote} />}
+            <p className={`mt-5 max-w-xl text-base leading-7 sm:text-lg ${isLight ? 'text-[#2a2018]/78' : 'text-white/75'}`}>{artist.longBio}</p>
+            {artist.bioQuote && (
+              <BioQuote artistName={artist.stageName} quote={artist.bioQuote} slug={artist.slug} />
+            )}
           </div>
 
           {/* KPIs hidden — to be re-enabled once data is confirmed */}
@@ -1021,22 +1073,29 @@ function PressReleaseSection({ artist }: { artist: Artist }) {
   }
 
   const release = artist.pressRelease;
+  const isWarm = artist.slug === 'blackmoz';
+  const backgroundClass = isWarm
+    ? 'absolute inset-0 bg-[linear-gradient(135deg,rgba(236,230,217,0.98),rgba(224,212,190,0.9)_48%,rgba(210,195,172,0.5))]'
+    : 'absolute inset-0 bg-[linear-gradient(135deg,rgba(16,24,72,0.92),rgba(34,10,58,0.82)_48%,rgba(8,8,18,0.96))]';
+  const ambientClass = isWarm
+    ? 'ambient-shift absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(214,164,124,0.3),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(140,90,55,0.26),transparent_30%)]'
+    : 'ambient-shift absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(74,144,255,0.28),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(180,82,255,0.24),transparent_30%)]';
 
   return (
-    <section className="press-section section-release relative overflow-hidden border-t border-white/12 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,24,72,0.92),rgba(34,10,58,0.82)_48%,rgba(8,8,18,0.96))]" />
-      <div className="ambient-shift absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(74,144,255,0.28),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(180,82,255,0.24),transparent_30%)]" />
+    <section className={`press-section section-release relative overflow-hidden border-t px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28 ${isWarm ? 'border-[#2a2018]/10' : 'border-white/12'}`}>
+      <div className={backgroundClass} />
+      <div className={ambientClass} />
       <div className="grain-overlay" />
       <div className="film-vignette" />
 
       <motion.article
-        className="theme-panel relative z-10 mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.05] lg:grid-cols-[0.86fr_1.14fr]"
+        className={`theme-panel relative z-10 mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] border lg:grid-cols-[0.86fr_1.14fr] ${isWarm ? 'border-[#2a2018]/16 bg-white/65' : 'border-white/12 bg-white/[0.05]'}`}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.18 }}
         transition={{ duration: 0.75, ease: smoothEase }}
       >
-        <div className="relative min-h-[26rem] border-b border-white/10 lg:border-b-0 lg:border-r">
+        <div className={`relative min-h-[26rem] border-b lg:border-b-0 lg:border-r ${isWarm ? 'border-[#2a2018]/10' : 'border-white/10'}`}>
           <Image
             src={artist.gallery[2]?.src ?? artist.heroImage.src}
             alt={artist.gallery[2]?.alt ?? artist.heroImage.alt}
@@ -1055,20 +1114,20 @@ function PressReleaseSection({ artist }: { artist: Artist }) {
           </div>
         </div>
 
-        <div className="theme-panel-subtle bg-black/24 p-6 sm:p-8 lg:p-10">
-          <h2 className="text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
+        <div className={`theme-panel-subtle p-6 sm:p-8 lg:p-10 ${isWarm ? 'bg-[#f4efe4]' : 'bg-black/24'}`}>
+          <h2 className={`text-3xl font-black tracking-[-0.05em] sm:text-4xl lg:text-5xl ${isWarm ? 'text-[#2a2018]' : 'text-white'}`}>
             {release.title}
           </h2>
-          <p className="mt-6 text-base leading-7 text-white/82 sm:text-lg">{release.intro}</p>
-          <div className="mt-6 space-y-4 text-sm leading-7 text-white/72 sm:text-base">
+          <p className={`mt-6 text-base leading-7 sm:text-lg ${isWarm ? 'text-[#2a2018]/85' : 'text-white/82'}`}>{release.intro}</p>
+          <div className={`mt-6 space-y-4 text-sm leading-7 sm:text-base ${isWarm ? 'text-[#2a2018]/75' : 'text-white/72'}`}>
             {release.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-          <blockquote className="mt-7 border-l border-white/25 pl-5 text-lg leading-8 text-white sm:text-xl">
+          <blockquote className={`mt-7 border-l pl-5 text-lg leading-8 sm:text-xl ${isWarm ? 'border-[#8b5e3c]/40 text-[#2a2018]' : 'border-white/25 text-white'}`}>
             “{release.quote}”
           </blockquote>
-          <p className="mt-6 text-sm leading-7 text-white/68">{release.footer}</p>
+          <p className={`mt-6 text-sm leading-7 ${isWarm ? 'text-[#2a2018]/68' : 'text-white/68'}`}>{release.footer}</p>
         </div>
       </motion.article>
     </section>
@@ -1584,30 +1643,39 @@ function WhoIsMartinaSection({ artist }: { artist: Artist }) {
 
 function ListenHighlightSection({ artist }: ArtistPageProps) {
   const feature = getPrimaryEmbed(artist.streamingLinks);
+  const isLight = artist.slug === 'blackmoz';
 
   return (
-    <section className="press-section section-spotify relative overflow-hidden border-t border-white/12 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,18,15,0.96),rgba(10,10,10,0.28))]" />
+    <section className={`press-section section-spotify relative overflow-hidden border-t px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28 ${isLight ? 'border-[#2a2018]/10' : 'border-white/12'}`}>
+      <div
+        className={
+          isLight
+            ? 'absolute inset-0 bg-[linear-gradient(180deg,rgba(236,230,217,0.98),rgba(210,195,172,0.4))]'
+            : 'absolute inset-0 bg-[linear-gradient(180deg,rgba(24,18,15,0.96),rgba(10,10,10,0.28))]'
+        }
+      />
       <div className="ambient-shift absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(241,211,161,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(160,96,66,0.16),transparent_28%)]" />
       <div className="grain-overlay" />
       <div className="film-vignette" />
       <div className="warm-spotlight right-[-8rem] top-[-6rem]" />
 
       <motion.div
-        className="theme-panel mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-white/15 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] shadow-[0_24px_90px_rgba(0,0,0,0.28)]"
+        className={`theme-panel mx-auto max-w-7xl overflow-hidden rounded-[2rem] border shadow-[0_24px_90px_rgba(0,0,0,0.1)] ${isLight ? 'border-[#2a2018]/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.5),rgba(180,139,110,0.1))]' : 'border-white/15 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))]'}`}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.75, ease: smoothEase }}
       >
         <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="theme-panel-subtle relative flex flex-col justify-between border-b border-white/10 bg-[linear-gradient(180deg,rgba(15,12,11,0.5),rgba(15,12,11,0.18))] p-6 sm:p-8 lg:border-b-0 lg:border-r lg:p-8">
+          <div
+            className={`theme-panel-subtle relative flex flex-col justify-between border-b p-6 sm:p-8 lg:border-b-0 lg:border-r lg:p-8 ${isLight ? 'border-[#2a2018]/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.3),rgba(255,255,255,0.05))]' : 'border-white/10 bg-[linear-gradient(180deg,rgba(15,12,11,0.5),rgba(15,12,11,0.18))]'}`}
+          >
             <div>
-              <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">Listen</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.06em] text-white sm:text-4xl lg:text-5xl">
+              <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>Listen</p>
+              <h2 className={`mt-4 text-3xl font-black tracking-[-0.06em] sm:text-4xl lg:text-5xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
                 Écouter {artist.stageName}
               </h2>
-              <p className="mt-4 max-w-lg text-sm leading-7 text-white/75 sm:text-base">
+              <p className={`mt-4 max-w-lg text-sm leading-7 sm:text-base ${isLight ? 'text-[#2a2018]/78' : 'text-white/75'}`}>
                 {artist.description}
               </p>
             </div>
@@ -1619,22 +1687,24 @@ function ListenHighlightSection({ artist }: ArtistPageProps) {
                   href={link.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="theme-chip inline-flex rounded-full border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-white"
+                  className={`theme-chip inline-flex rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] ${isLight ? 'border-[#2a2018]/12 text-[#2a2018]' : 'border-white/10 text-white'}`}
                 >
                   {link.platform}
                 </a>
               ))}
               <Link
                 href={getArtistPath(artist, '/listen')}
-                className="theme-chip inline-flex rounded-full border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-white"
+                className={`theme-chip inline-flex rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] ${isLight ? 'border-[#2a2018]/12 text-[#2a2018]' : 'border-white/10 text-white'}`}
               >
                 Tout écouter
               </Link>
             </div>
           </div>
 
-          <div className="theme-panel-subtle relative bg-[linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.04))] p-4 sm:p-5 lg:p-6">
-            <div className="theme-embed-shell overflow-hidden rounded-[1.25rem] border border-white/10 bg-black/30 shadow-[0_18px_60px_rgba(0,0,0,0.3)]">
+          <div
+            className={`theme-panel-subtle relative p-4 sm:p-5 lg:p-6 ${isLight ? 'bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.02))]' : 'bg-[linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.04))]'}`}
+          >
+            <div className={`theme-embed-shell overflow-hidden rounded-[1.25rem] border shadow-[0_18px_60px_rgba(0,0,0,0.12)] ${isLight ? 'border-[#2a2018]/10 bg-[#2a2018]/5' : 'border-white/10 bg-black/30'}`}>
               {feature?.embedUrl ? (
                 <iframe
                   title={feature.label}
@@ -1651,7 +1721,7 @@ function ListenHighlightSection({ artist }: ArtistPageProps) {
                     src={artist.heroImage.src}
                     alt={artist.heroImage.alt}
                     fill
-                    className="object-cover"
+                    className={artist.slug === 'blackmoz' ? 'object-cover object-[center_16%]' : 'object-cover'}
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                   <div className="theme-image-overlay absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
@@ -1667,6 +1737,7 @@ function ListenHighlightSection({ artist }: ArtistPageProps) {
 
 function VideoSection({ artist }: { artist: Artist }) {
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const isLight = artist.slug === 'blackmoz';
 
   if (artist.videos.length === 0) {
     return null;
@@ -1675,9 +1746,15 @@ function VideoSection({ artist }: { artist: Artist }) {
   return (
     <section
       id="video"
-      className="press-section section-video relative overflow-hidden border-t border-white/12 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32"
+      className={`press-section section-video relative overflow-hidden border-t px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32 ${isLight ? 'border-[#2a2018]/10' : 'border-white/12'}`}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,14,12,0.95),rgba(8,8,8,0.35))]" />
+      <div
+        className={
+          isLight
+            ? 'absolute inset-0 bg-[linear-gradient(180deg,rgba(236,230,217,0.98),rgba(210,195,172,0.4))]'
+            : 'absolute inset-0 bg-[linear-gradient(180deg,rgba(18,14,12,0.95),rgba(8,8,8,0.35))]'
+        }
+      />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(243,214,174,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(179,118,79,0.14),transparent_26%)]" />
       <div className="grain-overlay" />
       <div className="paper-texture" />
@@ -1686,6 +1763,7 @@ function VideoSection({ artist }: { artist: Artist }) {
           eyebrow="Vidéos"
           title="Live et visuels"
           body={`Une sélection de vidéos pour découvrir ${artist.stageName} en mouvement, sur scène et dans son univers.`}
+          slug={artist.slug}
         />
 
         <div className="mt-10 grid gap-5 sm:mt-12 md:grid-cols-2 xl:grid-cols-3">
@@ -1696,7 +1774,7 @@ function VideoSection({ artist }: { artist: Artist }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: index * 0.06, ease: smoothEase }}
-              className="theme-panel group grid overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03]"
+              className={`theme-panel group grid overflow-hidden rounded-[2rem] border ${isLight ? 'border-[#2a2018]/16 bg-white/65' : 'border-white/10 bg-white/[0.03]'}`}
             >
               <div className="relative aspect-[16/10] overflow-hidden">
                 {video.embedId && activeVideoId === video.embedId ? (
@@ -1724,13 +1802,22 @@ function VideoSection({ artist }: { artist: Artist }) {
                     sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                   />
                 )}
+                {!(video.embedId && activeVideoId === video.embedId) && (
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-black/45 backdrop-blur-md transition-transform duration-300 group-hover:scale-110 sm:h-20 sm:w-20">
+                      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 translate-x-[2px] sm:h-7 sm:w-7">
+                        <path d="M7 5.5v13l11-6.5-11-6.5Z" fill="#ffffff" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
                 <div className="theme-image-overlay pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/10" />
                 <div className="film-vignette" />
               </div>
 
-              <div className="theme-overlay-panel border-t border-white/10 bg-black/88 p-4 backdrop-blur-md">
-                <h3 className="text-xl font-black tracking-[-0.04em] text-white">{video.title}</h3>
-                <p className="mt-1 text-sm leading-6 text-white/75">{video.note}</p>
+              <div className={`theme-overlay-panel border-t p-4 backdrop-blur-md ${isLight ? 'border-[#2a2018]/10 bg-[#f4efe4]/92' : 'border-white/10 bg-black/88'}`}>
+                <h3 className={`text-xl font-black tracking-[-0.04em] ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>{video.title}</h3>
+                <p className={`mt-1 text-sm leading-6 ${isLight ? 'text-[#2a2018]/75' : 'text-white/75'}`}>{video.note}</p>
               </div>
             </motion.article>
           ))}
@@ -1742,13 +1829,20 @@ function VideoSection({ artist }: { artist: Artist }) {
 
 function GallerySection({ artist }: ArtistPageProps) {
   const previewImages = artist.gallery.slice(0, 4);
+  const isLight = artist.slug === 'blackmoz';
 
   return (
     <section
       id="gallery"
-      className="press-section section-gallery relative overflow-hidden border-t border-white/12 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32"
+      className={`press-section section-gallery relative overflow-hidden border-t px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32 ${isLight ? 'border-[#2a2018]/10' : 'border-white/12'}`}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,14,13,0.94),rgba(10,10,10,0.2))]" />
+      <div
+        className={
+          isLight
+            ? 'absolute inset-0 bg-[linear-gradient(180deg,rgba(236,230,217,0.96),rgba(210,195,172,0.32))]'
+            : 'absolute inset-0 bg-[linear-gradient(180deg,rgba(18,14,13,0.94),rgba(10,10,10,0.2))]'
+        }
+      />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(233,198,154,0.16),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(155,98,66,0.14),transparent_24%)]" />
       <div className="grain-overlay" />
       <div className="film-vignette" />
@@ -1758,6 +1852,7 @@ function GallerySection({ artist }: ArtistPageProps) {
             eyebrow="Galerie"
             title="Univers visuel"
             body={`Une sélection d'images pour découvrir l'identité visuelle et la présence de ${artist.stageName}.`}
+            slug={artist.slug}
           />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1767,7 +1862,7 @@ function GallerySection({ artist }: ArtistPageProps) {
           >
             <Link
               href={getArtistPath(artist, '/gallery')}
-              className="theme-chip inline-flex items-center rounded-full border border-white/15 bg-white/8 px-6 py-3 text-sm font-bold uppercase tracking-[0.26em] text-white transition-colors hover:bg-white/12"
+              className={`theme-chip inline-flex items-center rounded-full border px-6 py-3 text-sm font-bold uppercase tracking-[0.26em] transition-colors ${isLight ? 'border-[#2a2018]/12 bg-[#2a2018]/5 text-[#2a2018] hover:bg-[#2a2018]/10' : 'border-white/15 bg-white/8 text-white hover:bg-white/12'}`}
             >
               Voir la galerie
             </Link>
@@ -1782,7 +1877,7 @@ function GallerySection({ artist }: ArtistPageProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: index * 0.05, ease: smoothEase }}
-              className="theme-panel group relative w-[78vw] snap-center flex-none overflow-hidden rounded-[1.75rem] border border-white/10 sm:w-[24rem] lg:w-auto"
+              className={`theme-panel group relative w-[78vw] snap-center flex-none overflow-hidden rounded-[1.75rem] border sm:w-[24rem] lg:w-auto ${isLight ? 'border-[#2a2018]/10' : 'border-white/10'}`}
             >
               <div className="relative aspect-[4/5]">
                 <Image
@@ -1854,29 +1949,38 @@ function ContactSection({ artist }: { artist: Artist }) {
     kind: 'email' | 'instagram' | 'management' | 'press';
   }>;
 
+  const isLight = artist.slug === 'blackmoz';
+  const cardBorderRgba = isLight ? '1px solid rgba(42,32,24,0.10)' : '1px solid rgba(255,255,255,0.10)';
+
   return (
     <section
       id="contact"
-      className="press-section section-contact relative overflow-hidden border-t border-white/10 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32"
+      className={`press-section section-contact relative overflow-hidden border-t px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-32 ${isLight ? 'border-[#2a2018]/10' : 'border-white/10'}`}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,11,10,0.97),rgba(8,7,7,0.42))]" />
+      <div
+        className={
+          isLight
+            ? 'absolute inset-0 bg-[linear-gradient(180deg,rgba(236,230,217,0.98),rgba(210,195,172,0.44))]'
+            : 'absolute inset-0 bg-[linear-gradient(180deg,rgba(14,11,10,0.97),rgba(8,7,7,0.42))]'
+        }
+      />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(241,211,161,0.07),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(130,88,59,0.10),transparent_30%)]" />
       <div className="grain-overlay" />
       <div className="paper-texture" />
 
       <div className="relative z-10 mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-14">
         <div>
-          <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">Contact</p>
-          <h2 className="mt-5 max-w-xl text-4xl font-black tracking-[-0.06em] text-white sm:text-5xl lg:text-7xl">
+          <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>Contact</p>
+          <h2 className={`mt-5 max-w-xl text-4xl font-black tracking-[-0.06em] sm:text-5xl lg:text-7xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
             Travailler ensemble
           </h2>
-          <p className="mt-5 max-w-xl text-base leading-7 text-white/75 sm:text-lg">
+          <p className={`mt-5 max-w-xl text-base leading-7 sm:text-lg ${isLight ? 'text-[#2a2018]/78' : 'text-white/75'}`}>
             Pour toute demande professionnelle, booking ou prise de contact, voici les coordonnées
             dédiées à {artist.stageName}.
           </p>
         </div>
 
-        <div className="border-t border-white/12">
+        <div className={`border-t ${isLight ? 'border-[#2a2018]/10' : 'border-white/12'}`}>
           {contactItems.length === 1 ? (
             <div className="grid grid-cols-1">
               {contactItems.map((item) => (
@@ -1885,19 +1989,19 @@ function ContactSection({ artist }: { artist: Artist }) {
                   href={item.href}
                   target={item.href.startsWith('mailto:') ? undefined : '_blank'}
                   rel={item.href.startsWith('mailto:') ? undefined : 'noreferrer'}
-                  className="group flex flex-col justify-between border-b border-white/10 px-6 py-9 transition-colors hover:bg-white/[0.03] sm:min-h-[16rem] sm:px-8 sm:py-10 lg:min-h-[20rem] lg:px-10 lg:py-14"
+                  className={`group flex flex-col justify-between border-b px-6 py-9 transition-colors sm:min-h-[16rem] sm:px-8 sm:py-10 lg:min-h-[20rem] lg:px-10 lg:py-14 ${isLight ? 'border-[#2a2018]/10 hover:bg-[#2a2018]/[0.03]' : 'border-white/10 hover:bg-white/[0.03]'}`}
                 >
                   <div className="flex items-center gap-3">
                     <ContactLogo kind={item.kind} />
-                    <p className="text-[0.68rem] uppercase tracking-[0.38em] text-white/55">
+                    <p className={`text-[0.68rem] uppercase tracking-[0.38em] ${isLight ? 'text-[#2a2018]/80' : 'text-white/55'}`}>
                       {item.label}
                     </p>
                   </div>
                   <div className="mt-8">
-                    <p className="whitespace-pre-line break-words text-xl leading-7 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-2xl sm:leading-8 lg:text-3xl lg:leading-9">
+                    <p className={`whitespace-pre-line break-words text-xl leading-7 transition-colors group-hover:text-[#f1d3a1] sm:text-2xl sm:leading-8 lg:text-3xl lg:leading-9 ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
                       {item.value}
                     </p>
-                    <div className="mt-5 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.3em] text-white/35 transition-colors group-hover:text-[#f1d3a1]/60">
+                    <div className={`mt-5 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.3em] transition-colors group-hover:text-[#f1d3a1]/60 ${isLight ? 'text-[#2a2018]/60' : 'text-white/35'}`}>
                       <span>{item.href.startsWith('mailto:') ? 'Écrire' : 'Suivre'}</span>
                       <svg viewBox="0 0 16 16" className="h-3 w-3 translate-x-0 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 8h10M9 4l4 4-4 4" />
@@ -1915,22 +2019,22 @@ function ContactSection({ artist }: { artist: Artist }) {
                   href={item.href}
                   target={item.href.startsWith('mailto:') ? undefined : '_blank'}
                   rel={item.href.startsWith('mailto:') ? undefined : 'noreferrer'}
-                  className="group flex flex-col justify-between border-b border-white/10 px-6 py-9 transition-colors hover:bg-white/[0.03] sm:min-h-[16rem] sm:px-8 sm:py-10 lg:min-h-[20rem] lg:px-10 lg:py-14"
+                  className={`group flex flex-col justify-between border-b px-6 py-9 transition-colors sm:min-h-[16rem] sm:px-8 sm:py-10 lg:min-h-[20rem] lg:px-10 lg:py-14 ${isLight ? 'border-[#2a2018]/10 hover:bg-[#2a2018]/[0.03]' : 'border-white/10 hover:bg-white/[0.03]'}`}
                   style={{
-                    borderRight: index === 0 ? '1px solid rgba(255,255,255,0.10)' : undefined,
+                    borderRight: index === 0 ? cardBorderRgba : undefined,
                   }}
                 >
                   <div className="flex items-center gap-3">
                     <ContactLogo kind={item.kind} />
-                    <p className="text-[0.68rem] uppercase tracking-[0.38em] text-white/55">
+                    <p className={`text-[0.68rem] uppercase tracking-[0.38em] ${isLight ? 'text-[#2a2018]/80' : 'text-white/55'}`}>
                       {item.label}
                     </p>
                   </div>
                   <div className="mt-8">
-                    <p className="whitespace-pre-line break-words text-xl leading-7 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-2xl sm:leading-8 lg:text-3xl lg:leading-9">
+                    <p className={`whitespace-pre-line break-words text-xl leading-7 transition-colors group-hover:text-[#f1d3a1] sm:text-2xl sm:leading-8 lg:text-3xl lg:leading-9 ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
                       {item.value}
                     </p>
-                    <div className="mt-5 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.3em] text-white/35 transition-colors group-hover:text-[#f1d3a1]/60">
+                    <div className={`mt-5 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.3em] transition-colors group-hover:text-[#f1d3a1]/60 ${isLight ? 'text-[#2a2018]/60' : 'text-white/35'}`}>
                       <span>{item.href.startsWith('mailto:') ? 'Écrire' : 'Suivre'}</span>
                       <svg viewBox="0 0 16 16" className="h-3 w-3 translate-x-0 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 8h10M9 4l4 4-4 4" />
@@ -1948,22 +2052,22 @@ function ContactSection({ artist }: { artist: Artist }) {
                   href={item.href}
                   target={item.href.startsWith('mailto:') ? undefined : '_blank'}
                   rel={item.href.startsWith('mailto:') ? undefined : 'noreferrer'}
-                  className="group grid min-h-[8rem] grid-cols-1 border-b border-white/10 px-3 py-5 transition-colors hover:bg-white/[0.02] sm:px-6 sm:min-h-[10rem] lg:min-h-[11rem] lg:py-7"
+                  className={`group grid min-h-[8rem] grid-cols-1 border-b px-3 py-5 transition-colors sm:px-6 sm:min-h-[10rem] lg:min-h-[11rem] lg:py-7 ${isLight ? 'border-[#2a2018]/10 hover:bg-[#2a2018]/[0.02]' : 'border-white/10 hover:bg-white/[0.02]'}`}
                   style={{
                     borderRight:
                       index % 2 === 0 && index !== contactItems.length - 1
-                        ? '1px solid rgba(255,255,255,0.10)'
+                        ? cardBorderRgba
                         : undefined,
                   }}
                 >
                   <div className="flex items-center gap-2 sm:gap-4">
                     <ContactLogo kind={item.kind} />
-                    <p className="text-[0.62rem] uppercase tracking-[0.28em] text-white/72 sm:text-[0.72rem] sm:tracking-[0.32em]">
+                    <p className={`text-[0.62rem] uppercase tracking-[0.28em] sm:text-[0.72rem] sm:tracking-[0.32em] ${isLight ? 'text-[#2a2018]/75' : 'text-white/72'}`}>
                       {item.label}
                     </p>
                   </div>
                   <div className="min-w-0 pl-0 sm:pl-8">
-                    <p className="mt-3 whitespace-pre-line break-words text-sm leading-6 text-white transition-colors group-hover:text-[#f1d3a1] sm:text-lg sm:leading-7 lg:text-xl">
+                    <p className={`mt-3 whitespace-pre-line break-words text-sm leading-6 transition-colors group-hover:text-[#f1d3a1] sm:text-lg sm:leading-7 lg:text-xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
                       {item.value}
                     </p>
                   </div>
@@ -2071,6 +2175,12 @@ function FooterPlatformIcon({ platform }: { platform: string }) {
       <circle cx="12" cy="11.7" r="1.15" fill="#fff" />
     </svg>
   );
+  if (platform === 'Facebook') return (
+    <svg viewBox="0 0 24 24" fill="none" className={sz}>
+      <circle cx="12" cy="12" r="10" fill="#1877F2" />
+      <path d="M13.6 21.8v-7.3h2.45l.37-2.85h-2.82v-1.82c0-.82.23-1.38 1.4-1.38h1.5V5.9c-.26-.03-1.15-.11-2.18-.11-2.16 0-3.64 1.32-3.64 3.74v2.09H8.2v2.85h2.48v7.3h2.92Z" fill="#fff" />
+    </svg>
+  );
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="#536dff" strokeWidth="1.8" className={sz}>
       <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
@@ -2171,6 +2281,7 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const isOpen = lightboxIndex !== null;
   const current = lightboxIndex !== null ? artist.gallery[lightboxIndex] : null;
+  const isLight = artist.slug === 'blackmoz';
 
   const handleDownload = async (src: string, caption: string) => {
     try {
@@ -2205,36 +2316,39 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
   }, [isOpen, artist.gallery.length]);
 
   return (
-    <main className="gallery-shell relative min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#19110d_0%,#241814_22%,#16100d_48%,#0d0908_100%)] text-white" data-artist={artist.slug}>
+    <main
+      className={`gallery-shell relative min-h-screen overflow-x-hidden ${isLight ? 'bg-[#ece6d9] text-[#2a2018]' : 'bg-[linear-gradient(180deg,#19110d_0%,#241814_22%,#16100d_48%,#0d0908_100%)] text-white'}`}
+      data-artist={artist.slug}
+    >
       <SiteHeader artist={artist} prefixAnchors />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(233,198,154,0.16),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(155,98,66,0.14),transparent_24%)]" />
       <div className="grain-overlay" />
       <div className="film-vignette" />
       <div className="paper-texture" />
 
-      <section className="gallery-section relative overflow-hidden border-b border-white/12 px-5 pb-14 pt-28 sm:px-8 lg:px-12 lg:pb-20 lg:pt-32">
+      <section className={`gallery-section relative overflow-hidden border-b px-5 pb-14 pt-28 sm:px-8 lg:px-12 lg:pb-20 lg:pt-32 ${isLight ? 'border-[#2a2018]/10' : 'border-white/12'}`}>
         <div className="relative z-10 mx-auto max-w-7xl">
           <Link
             href={getArtistPath(artist, '/')}
-            className="theme-chip inline-flex items-center rounded-full border border-white/15 bg-white/8 px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-white transition-colors hover:bg-white/12"
+            className={`theme-chip inline-flex items-center rounded-full border px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] transition-colors ${isLight ? 'border-[#2a2018]/12 bg-[#2a2018]/5 text-[#2a2018] hover:bg-[#2a2018]/10' : 'border-white/15 bg-white/8 text-white hover:bg-white/12'}`}
           >
             ← Retour
           </Link>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div>
-              <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">Galerie</p>
-              <h1 className="mt-4 text-5xl font-black tracking-[-0.06em] text-white sm:text-6xl lg:text-8xl">
+              <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>Galerie</p>
+              <h1 className={`mt-4 text-5xl font-black tracking-[-0.06em] sm:text-6xl lg:text-8xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
                 {artist.stageName}
               </h1>
-              <p className="theme-overlay-panel mt-5 max-w-xl rounded-[1.25rem] bg-black/24 p-4 text-base leading-7 text-white/75 backdrop-blur-sm sm:text-lg">
+              <p className={`theme-overlay-panel mt-5 max-w-xl rounded-[1.25rem] border p-4 text-base leading-7 backdrop-blur-sm sm:text-lg ${isLight ? 'border-[#2a2018]/14 bg-white/55 text-[#2a2018]/85' : 'border-transparent bg-black/24 text-white/75'}`}>
                 Chaque image est un fragment de l&apos;univers de {artist.stageName} — scène, lumière, présence.
               </p>
             </div>
 
-            <div className="theme-panel rounded-[1.75rem] border border-white/10 bg-white/[0.05] p-6">
-              <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">Usage éditorial</p>
-              <p className="mt-3 text-sm leading-7 text-white/75">
+            <div className={`theme-panel rounded-[1.75rem] border p-6 ${isLight ? 'border-[#2a2018]/16 bg-white/65' : 'border-white/10 bg-white/[0.05]'}`}>
+              <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>Usage éditorial</p>
+              <p className={`mt-3 text-sm leading-7 ${isLight ? 'text-[#2a2018]/80' : 'text-white/75'}`}>
                 Fichiers disponibles sur demande pour tout projet presse, booking ou communication visuelle.
               </p>
             </div>
@@ -2242,7 +2356,9 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
         </div>
       </section>
 
-      <section className="gallery-grid-section relative bg-[linear-gradient(180deg,rgba(12,10,10,0),rgba(255,255,255,0.03))] px-5 pb-20 pt-8 sm:px-8 lg:px-12 lg:pb-28">
+      <section
+        className={`gallery-grid-section relative px-5 pb-20 pt-8 sm:px-8 lg:px-12 lg:pb-28 ${isLight ? 'bg-[linear-gradient(180deg,rgba(236,230,217,0),rgba(180,139,110,0.06))]' : 'bg-[linear-gradient(180deg,rgba(12,10,10,0),rgba(255,255,255,0.03))]'}`}
+      >
         <div className="warm-spotlight left-[-10rem] top-[10%]" />
         <div className="relative z-10 mx-auto grid max-w-7xl gap-5 md:grid-cols-2 xl:grid-cols-3">
           {artist.gallery.map((image, index) => (
@@ -2251,7 +2367,7 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: index * 0.05, ease: smoothEase }}
-              className="theme-panel group cursor-pointer overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04]"
+              className={`theme-panel group cursor-pointer overflow-hidden rounded-[1.75rem] border ${isLight ? 'border-[#2a2018]/16 bg-white/65' : 'border-white/10 bg-white/[0.04]'}`}
               onClick={() => setLightboxIndex(index)}
             >
               <div className="relative aspect-[4/5]">
@@ -2369,9 +2485,13 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
 
 export function ArtistListenPage({ artist }: ArtistPageProps) {
   const primaryEmbed = getPrimaryEmbed(artist.streamingLinks);
+  const isLight = artist.slug === 'blackmoz';
 
   return (
-    <main className="gallery-shell relative min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#120d0b_0%,#211612_22%,#140f0d_54%,#0d0908_100%)] text-white" data-artist={artist.slug}>
+    <main
+      className={`gallery-shell relative min-h-screen overflow-x-hidden ${isLight ? 'bg-[#ece6d9] text-[#2a2018]' : 'bg-[linear-gradient(180deg,#120d0b_0%,#211612_22%,#140f0d_54%,#0d0908_100%)] text-white'}`}
+      data-artist={artist.slug}
+    >
       <SiteHeader artist={artist} prefixAnchors />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(233,198,154,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(155,98,66,0.14),transparent_24%)]" />
       <div className="grain-overlay" />
@@ -2380,7 +2500,7 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
       <div className="warm-spotlight left-[-6rem] top-[8%]" />
 
       {/* Header */}
-      <section className="relative overflow-hidden border-b border-white/10 px-5 pb-12 pt-28 sm:px-8 lg:px-12 lg:pb-16 lg:pt-32">
+      <section className={`relative overflow-hidden border-b px-5 pb-12 pt-28 sm:px-8 lg:px-12 lg:pb-16 lg:pt-32 ${isLight ? 'border-[#2a2018]/10' : 'border-white/10'}`}>
         <div className="relative z-10 mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -2389,7 +2509,7 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
           >
             <Link
               href={getArtistPath(artist, '/')}
-              className="theme-chip inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-white/80 transition-colors hover:bg-white/12"
+              className={`theme-chip inline-flex items-center gap-2 rounded-full border px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] transition-colors ${isLight ? 'border-[#2a2018]/12 bg-[#2a2018]/5 text-[#2a2018]/85 hover:bg-[#2a2018]/10' : 'border-white/15 bg-white/8 text-white/80 hover:bg-white/12'}`}
             >
               ← Retour
             </Link>
@@ -2401,11 +2521,11 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1, ease: smoothEase }}
             >
-              <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">Écouter</p>
-              <h1 className="mt-4 text-5xl font-black tracking-[-0.06em] text-white sm:text-6xl lg:text-8xl">
+              <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>Écouter</p>
+              <h1 className={`mt-4 text-5xl font-black tracking-[-0.06em] sm:text-6xl lg:text-8xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
                 {artist.stageName}
               </h1>
-              <p className="mt-5 max-w-lg text-base leading-7 text-white/75 sm:text-lg">
+              <p className={`mt-5 max-w-lg text-base leading-7 sm:text-lg ${isLight ? 'text-[#2a2018]/78' : 'text-white/75'}`}>
                 {artist.tagline}
               </p>
             </motion.div>
@@ -2422,7 +2542,7 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
                   href={link.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="theme-chip rounded-full border border-white/15 bg-white/6 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.24em] text-white/85 transition-colors hover:bg-white/12 hover:text-white"
+                  className={`theme-chip rounded-full border px-5 py-2.5 text-xs font-bold uppercase tracking-[0.24em] transition-colors ${isLight ? 'border-[#2a2018]/12 bg-[#2a2018]/5 text-[#2a2018]/85 hover:bg-[#2a2018]/10 hover:text-[#2a2018]' : 'border-white/15 bg-white/6 text-white/85 hover:bg-white/12 hover:text-white'}`}
                 >
                   {link.platform}
                 </a>
@@ -2441,7 +2561,7 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.2, ease: smoothEase }}
-            className="theme-embed-shell overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/25"
+            className={`theme-embed-shell overflow-hidden rounded-[1.75rem] border ${isLight ? 'border-[#2a2018]/10 bg-[#2a2018]/5' : 'border-white/10 bg-black/25'}`}
           >
             {primaryEmbed?.embedUrl ? (
               <iframe
@@ -2459,7 +2579,7 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
                   src={artist.heroImage.src}
                   alt={artist.heroImage.alt}
                   fill
-                  className="object-cover"
+                  className={artist.slug === 'blackmoz' ? 'object-cover object-[center_16%]' : 'object-cover'}
                   sizes="(max-width: 1024px) 100vw, 55vw"
                 />
                 <div className="theme-image-overlay absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
@@ -2474,15 +2594,15 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.35, ease: smoothEase }}
-              className="theme-panel rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-6"
+              className={`theme-panel rounded-[1.75rem] border p-6 ${isLight ? 'border-[#2a2018]/16 bg-white/65' : 'border-white/10 bg-white/[0.04]'}`}
             >
-              <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">Biographie</p>
-              <p className="mt-4 text-xl font-black leading-snug tracking-[-0.03em] text-white sm:text-2xl">
+              <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>Biographie</p>
+              <p className={`mt-4 text-xl font-black leading-snug tracking-[-0.03em] sm:text-2xl ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>
                 {artist.shortBio}
               </p>
-              <p className="mt-4 text-sm leading-7 text-white/75">{artist.longBio}</p>
+              <p className={`mt-4 text-sm leading-7 ${isLight ? 'text-[#2a2018]/78' : 'text-white/75'}`}>{artist.longBio}</p>
               {artist.bioQuote && (
-                <BioQuote artistName={artist.stageName} quote={artist.bioQuote} compact />
+                <BioQuote artistName={artist.stageName} quote={artist.bioQuote} slug={artist.slug} compact />
               )}
             </motion.div>
 
@@ -2492,19 +2612,19 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.75, delay: 0.5, ease: smoothEase }}
-                className="theme-panel rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-6"
+                className={`theme-panel rounded-[1.75rem] border p-6 ${isLight ? 'border-[#2a2018]/16 bg-white/65' : 'border-white/10 bg-white/[0.04]'}`}
               >
-                <p className="text-[0.72rem] uppercase tracking-[0.45em] text-white/55">Citations presse</p>
+                <p className={`text-[0.72rem] uppercase tracking-[0.45em] ${isLight ? 'text-[#6b4a2e]' : 'text-white/55'}`}>Citations presse</p>
                 <div className="mt-5 space-y-5">
                   {artist.pressQuotes.map((quote, index) => (
                     <div
                       key={`${quote.source}-${index}`}
-                      className="border-t border-white/8 pt-5 first:border-t-0 first:pt-0"
+                      className={`border-t pt-5 first:border-t-0 first:pt-0 ${isLight ? 'border-[#2a2018]/8' : 'border-white/8'}`}
                     >
-                      <p className="text-base leading-7 text-white/85 italic">
+                      <p className={`text-base leading-7 italic ${isLight ? 'text-[#2a2018]/85' : 'text-white/85'}`}>
                         &ldquo;{quote.quote}&rdquo;
                       </p>
-                      <p className="mt-2 text-[0.68rem] uppercase tracking-[0.3em] text-white/42">
+                      <p className={`mt-2 text-[0.68rem] uppercase tracking-[0.3em] ${isLight ? 'text-[#2a2018]/68' : 'text-white/42'}`}>
                         {quote.source} · {quote.kind}
                       </p>
                     </div>
@@ -2523,10 +2643,10 @@ export function ArtistListenPage({ artist }: ArtistPageProps) {
               {artist.highlights.map((h) => (
                 <div
                   key={h.label}
-                  className="theme-overlay-panel rounded-[1.25rem] border border-white/10 bg-black/22 p-4 backdrop-blur-md"
+                  className={`theme-overlay-panel rounded-[1.25rem] border p-4 backdrop-blur-md ${isLight ? 'border-[#2a2018]/16 bg-white/65' : 'border-white/10 bg-black/22'}`}
                 >
-                  <p className="text-[0.62rem] uppercase tracking-[0.26em] text-white/48">{h.label}</p>
-                  <p className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">{h.value}</p>
+                  <p className={`text-[0.62rem] uppercase tracking-[0.26em] ${isLight ? 'text-[#2a2018]/75' : 'text-white/48'}`}>{h.label}</p>
+                  <p className={`mt-2 text-2xl font-black tracking-[-0.04em] ${isLight ? 'text-[#2a2018]' : 'text-white'}`}>{h.value}</p>
                 </div>
               ))}
             </motion.div>

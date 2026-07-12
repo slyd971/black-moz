@@ -374,6 +374,78 @@ textarea {
     radial-gradient(circle at bottom right, rgba(179, 80, 255, 0.2), transparent 30%);
 }
 
+/* Black Moz — palette crème/cuivre échantillonnée du dossier de presse
+   (fond #E8E3D9, accent cuivre #B48B6E, panneau tan #C2A28A, texte brun #2A2018) */
+:root[data-artist-slug='blackmoz'] {
+  --site-bg: #ece6d9;
+  --site-text: #2a2018;
+  --site-muted: rgba(42, 32, 24, 0.66);
+  --site-border: rgba(42, 32, 24, 0.16);
+  --site-panel: rgba(180, 139, 110, 0.14);
+  --site-panel-strong: rgba(180, 139, 110, 0.26);
+  --site-overlay: rgba(236, 230, 217, 0.55);
+  --site-overlay-strong: rgba(236, 230, 217, 0.9);
+  --site-button-bg: #2a2018;
+  --site-button-text: #f3ead9;
+  --site-chip-bg: rgba(42, 32, 24, 0.06);
+  --site-chip-active-bg: #2a2018;
+  --site-chip-active-text: #f3ead9;
+  --site-shadow: 0 24px 70px rgba(60, 40, 20, 0.16);
+  --site-input-bg: rgba(42, 32, 24, 0.04);
+}
+
+:root[data-artist-slug='blackmoz'] .text-\[\#f1d3a1\],
+:root[data-artist-slug='blackmoz'] .group:hover .group-hover\:text-\[\#f1d3a1\],
+:root[data-artist-slug='blackmoz'] .hover\:text-\[\#f1d3a1\]:hover {
+  color: #8b5e3c;
+}
+
+:root[data-artist-slug='blackmoz'] .bg-\[\#f1d3a1\] {
+  background: linear-gradient(90deg, #8b5e3c, #b48b6e) !important;
+}
+
+:root[data-artist-slug='blackmoz'] .warm-spotlight {
+  background: radial-gradient(circle, rgba(180, 139, 110, 0.3), transparent 68%);
+}
+
+[data-artist='blackmoz'].site-shell,
+[data-artist='blackmoz'].gallery-shell {
+  background: #ece6d9;
+}
+
+[data-artist='blackmoz'] .hero-luxury,
+[data-artist='blackmoz'] .hero-street,
+[data-artist='blackmoz'] .hero-futuristic {
+  background: #ece6d9;
+}
+
+[data-artist='blackmoz'] .hero-overlay-primary {
+  background: linear-gradient(180deg, rgba(20, 14, 8, 0.1) 0%, rgba(24, 16, 9, 0.24) 32%, rgba(12, 8, 5, 0.8) 100%);
+}
+
+[data-artist='blackmoz'] .hero-overlay-secondary,
+[data-artist='blackmoz'] .hero-overlay-accent {
+  background: radial-gradient(circle at top right, rgba(180, 139, 110, 0.22), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(139, 94, 60, 0.22), transparent 30%),
+    linear-gradient(135deg, rgba(90, 58, 34, 0.16), transparent 55%);
+}
+
+[data-artist='blackmoz'] .section-spotify > .absolute:first-child,
+[data-artist='blackmoz'] .section-video > .absolute:first-child,
+[data-artist='blackmoz'] .section-gallery > .absolute:first-child,
+[data-artist='blackmoz'] .section-about > .absolute:first-child,
+[data-artist='blackmoz'] .section-contact > .absolute:first-child {
+  background: linear-gradient(180deg, rgba(236, 230, 217, 0.98), rgba(210, 195, 172, 0.5));
+}
+
+[data-artist='blackmoz'] .section-spotify > .ambient-shift,
+[data-artist='blackmoz'] .section-gallery > .absolute:nth-child(2),
+[data-artist='blackmoz'] .section-video > .absolute:nth-child(2),
+[data-artist='blackmoz'] .section-contact > .absolute:nth-child(2) {
+  background: radial-gradient(circle at top left, rgba(180, 139, 110, 0.2), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(139, 94, 60, 0.18), transparent 30%);
+}
+
 /* ══════════════════════════════════════════════════════════
    SECTIONS — SYSTÈME ::BEFORE
    ══════════════════════════════════════════════════════════ */
