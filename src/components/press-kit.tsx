@@ -2265,6 +2265,17 @@ function SiteFooter({ artist }: { artist: Artist }) {
           </div>
         </nav>
       </div>
+
+      <div className="relative z-10 mx-auto mt-8 max-w-7xl border-t border-black/8 pt-6">
+        <a
+          href="https://presskit.fr"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[0.68rem] tracking-[0.18em] text-black/40 transition-colors hover:text-black/70"
+        >
+          Powered by presskit.fr
+        </a>
+      </div>
     </footer>
   );
 }
