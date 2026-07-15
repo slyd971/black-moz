@@ -19,8 +19,14 @@ function getPrimaryEmbed(links: ArtistStreamingLink[]) {
   return links.find((link) => link.embedUrl) ?? null;
 }
 
+const galleryObjectPositionOverrides: Record<string, string> = {
+  '/blackmoz/portrait-bw.jpg': 'object-right',
+  '/blackmoz/street-wall-color.jpg': 'object-right',
+  '/blackmoz/street-sky-color.jpg': 'object-[75%_center]',
+};
+
 function getGalleryImageClass(src: string) {
-  const objectPosition = src === '/blackmoz/portrait-bw.jpg' ? 'object-right' : 'object-center';
+  const objectPosition = galleryObjectPositionOverrides[src] ?? 'object-center';
   return `object-cover ${objectPosition} transition-transform duration-700 group-hover:scale-105`;
 }
 

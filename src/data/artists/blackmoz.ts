@@ -49,6 +49,41 @@ export const blackmozArtist: Artist = {
       alt: 'Pochette de l’album CONTRADICTION de Black Moz et LUCIENOVA',
       caption: 'CONTRADICTION — Pochette',
     },
+    {
+      src: '/blackmoz/live-duo-bw.jpg',
+      alt: 'Black Moz en duo sur scène avec une chanteuse, performance live en noir et blanc',
+      caption: 'Live — Duo scène',
+    },
+    {
+      src: '/blackmoz/live-tshirt-bw.jpg',
+      alt: 'Black Moz sur scène en t-shirt Madi Square Garden, portrait noir et blanc',
+      caption: 'Live — Madi Square Garden',
+    },
+    {
+      src: '/blackmoz/live-mic-bw.jpg',
+      alt: 'Black Moz au micro sur scène, performance live en noir et blanc',
+      caption: 'Live — Au micro',
+    },
+    {
+      src: '/blackmoz/portrait-stonewall-bw.jpg',
+      alt: 'Black Moz en portrait devant un mur en pierre, veste en cuir, noir et blanc',
+      caption: 'Portrait — Mur en pierre',
+    },
+    {
+      src: '/blackmoz/street-stairs-color.jpg',
+      alt: 'Black Moz assis sur des gradins en bois dans un décor urbain parisien',
+      caption: 'Urbain — Gradins',
+    },
+    {
+      src: '/blackmoz/street-wall-color.jpg',
+      alt: 'Black Moz en veste rayée, appuyé contre un mur dans une rue de Paris',
+      caption: 'Urbain — Veste rayée',
+    },
+    {
+      src: '/blackmoz/street-sky-color.jpg',
+      alt: 'Black Moz en contre-plongée sous un ciel nuageux, t-shirt Paltan Family Records',
+      caption: 'Urbain — Contre-plongée',
+    },
   ],
   socials: [
     {
