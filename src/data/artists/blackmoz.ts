@@ -2,7 +2,7 @@ import type { Artist } from '@/types/artist';
 
 export const blackmozArtist: Artist = {
   slug: 'blackmoz',
-  domain: null,
+  domain: 'black-moz.presskit.fr',
   vercelSubdomain: 'blackmoz.vercel.app',
   name: 'Madi Ndinga',
   stageName: 'Black Moz',
@@ -198,13 +198,16 @@ export const blackmozArtist: Artist = {
   seo: {
     title: 'Black Moz | Press Kit Officiel — Rap, Slam & CONTRADICTION',
     description:
-      "Press kit officiel de Black Moz : bio, CONTRADICTION avec LUCIENOVA, photos presse, vidéos live, réseaux sociaux et contacts booking.",
+      "Press kit officiel de Black Moz, rappeur et slameur basé à Paris : biographie, CONTRADICTION avec LUCIENOVA, photos presse, vidéos live et contacts booking.",
     keywords: [
       'Black Moz',
+      'Black Mozart',
       'Madi Ndinga',
       'CONTRADICTION',
       'LUCIENOVA',
-      'rap slam',
+      'A Contre Courant',
+      'rap français',
+      'slam Paris',
       'press kit Black Moz',
       'booking Black Moz',
       'Paltan Family Records',
@@ -217,12 +220,12 @@ export const blackmozArtist: Artist = {
       gallery: {
         title: 'Black Moz | Photos presse et galerie officielle',
         description:
-          'Photos presse officielles de Black Moz : portraits, visuels CONTRADICTION et galerie haute qualité.',
+          'Photos presse officielles de Black Moz, rappeur et slameur parisien : portraits studio, clichés live et visuels CONTRADICTION en haute résolution.',
       },
       listen: {
         title: 'Black Moz | Écouter — A contre Courant & CONTRADICTION',
         description:
-          "Découvrez l'actualité musicale de Black Moz : « A contre Courant » et l'album CONTRADICTION avec LUCIENOVA.",
+          "Écoutez Black Moz sur Spotify, Apple Music, Deezer et YouTube Music : le single « A Contre Courant » et l'album CONTRADICTION avec LUCIENOVA.",
       },
     },
   },
