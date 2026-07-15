@@ -19,6 +19,11 @@ function getPrimaryEmbed(links: ArtistStreamingLink[]) {
   return links.find((link) => link.embedUrl) ?? null;
 }
 
+function getGalleryImageClass(src: string) {
+  const objectPosition = src === '/blackmoz/portrait-bw.jpg' ? 'object-right' : 'object-center';
+  return `object-cover ${objectPosition} transition-transform duration-700 group-hover:scale-105`;
+}
+
 function getSocialUrl(artist: Artist, platform: ArtistSocialLink['platform']) {
   return artist.socials.find((social) => social.platform === platform)?.url ?? '#';
 }
@@ -1884,7 +1889,7 @@ function GallerySection({ artist }: ArtistPageProps) {
                   src={image.src}
                   alt={image.alt}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className={getGalleryImageClass(image.src)}
                   sizes="(max-width: 640px) 78vw, (max-width: 1024px) 24rem, (max-width: 1280px) 33vw, 25vw"
                 />
               </div>
@@ -2375,7 +2380,7 @@ export function ArtistGalleryPage({ artist }: ArtistPageProps) {
                   src={image.src}
                   alt={image.alt}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className={getGalleryImageClass(image.src)}
                   sizes="(max-width: 1280px) 100vw, 26rem"
                 />
                 <div className="theme-image-overlay absolute inset-0 bg-gradient-to-t from-black via-black/15 to-transparent" />
