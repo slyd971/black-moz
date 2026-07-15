@@ -631,7 +631,7 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
     artist.slug === 'sherin'
       ? 'object-cover object-[center_22%] opacity-90'
       : artist.slug === 'blackmoz'
-        ? 'object-cover object-[center_16%] opacity-90'
+        ? 'object-cover object-[center_16%] opacity-90 lg:scale-125 lg:object-[75%_16%]'
         : 'object-cover object-center opacity-90';
 
   useEffect(() => {
