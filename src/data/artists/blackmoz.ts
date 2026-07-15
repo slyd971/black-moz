@@ -62,7 +62,34 @@ export const blackmozArtist: Artist = {
       url: 'https://www.facebook.com/share/1GpacQbYty/?mibextid=wwXIfr',
     },
   ],
-  streamingLinks: [],
+  streamingLinks: [
+    {
+      platform: 'Spotify',
+      label: 'Black Moz sur Spotify',
+      url: 'https://open.spotify.com/artist/7ByZdtDSbCdnP9jZanVqzF',
+      embedUrl: 'https://open.spotify.com/embed/artist/7ByZdtDSbCdnP9jZanVqzF?utm_source=generator',
+    },
+    {
+      platform: 'Apple Music',
+      label: '« A Contre Courant » sur Apple Music',
+      url: 'https://music.apple.com/fr/album/6773041780',
+    },
+    {
+      platform: 'Deezer',
+      label: '« A Contre Courant » sur Deezer',
+      url: 'https://www.deezer.com/album/990845921',
+    },
+    {
+      platform: 'YouTube Music',
+      label: '« A Contre Courant » sur YouTube Music',
+      url: 'https://music.youtube.com/playlist?list=OLAK5uy_lJkifBmfzTaT-HuUupVG8RIHge7lkaFks',
+    },
+    {
+      platform: 'Amazon Music',
+      label: '« A Contre Courant » sur Amazon Music',
+      url: 'https://music.amazon.com/albums/B0H2WLYLD5',
+    },
+  ],
   bookingEmail: 'madi.ndinga@gmail.com',
   managementContact: {
     name: 'Black Moz — Paltan Family Records',
