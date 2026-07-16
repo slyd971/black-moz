@@ -631,8 +631,12 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
     artist.slug === 'sherin'
       ? 'object-cover object-[center_22%] opacity-90'
       : artist.slug === 'blackmoz'
-        ? 'object-cover object-[center_16%] opacity-90 lg:scale-125 lg:object-[75%_16%]'
+        ? 'object-cover object-[center_16%] opacity-90 lg:scale-150 lg:object-[95%_16%]'
         : 'object-cover object-center opacity-90';
+  const heroTitleClass =
+    artist.slug === 'blackmoz'
+      ? 'relative z-10 text-6xl leading-[0.92] font-black tracking-[-0.08em] text-white drop-shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:text-7xl md:text-8xl lg:text-9xl'
+      : 'relative z-10 text-6xl leading-[0.92] font-black tracking-[-0.08em] text-white drop-shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:text-8xl md:text-[9rem] lg:text-[12rem]';
 
   useEffect(() => {
     if (initialTheme) return; // theme forced by route, ignore localStorage
@@ -695,7 +699,7 @@ function ArtistHero({ artist, initialTheme }: ArtistPageProps & { initialTheme?:
                   Press kit
                 </motion.p>
                 <motion.h1
-                  className="relative z-10 text-6xl leading-[0.92] font-black tracking-[-0.08em] text-white drop-shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:text-8xl md:text-[9rem] lg:text-[12rem]"
+                  className={heroTitleClass}
                   style={{ y: y1 }}
                   initial={{ x: -60, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
